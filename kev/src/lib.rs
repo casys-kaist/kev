@@ -29,7 +29,7 @@
 //! memory safety and ownership rule of Rust could significantly reduce the debugging time while implement an operating system.
 //!
 //! ## Getting Started
-//! You can bootstrap your KEOS project with following command lines.
+//! You can bootstrap your KeV project with following command lines.
 //! ```/bin/bash
 //! $ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 //! $ sudo apt install -yy qemu-system-x86 grub xorriso grub2-common grub-pc mtools
