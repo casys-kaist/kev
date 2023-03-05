@@ -1,0 +1,18 @@
+[unstable]
+build-std = ["core", "compiler_builtins", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
+
+[build]
+rustflags = [
+  "-C", "force-frame-pointers=y",
+  "-C", "panic=unwind",
+  "-C", "link_dead_code=y",
+]
+target = "./.cargo/x86_64-unknown-keos.json"
+
+[target."x86_64-unknown-keos"]
+runner = ".cargo/run.sh"
+rustflags=[
+  "-C", "link-args=-T.cargo/binder.ld",
+  "-Z", "emit-stack-sizes",
+]

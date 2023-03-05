@@ -1,0 +1,8 @@
+[package]
+name = "unwind"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+num_enum = { version = "0.5.0", default-features = false }
+cfg-if = "1.0.0"

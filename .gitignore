@@ -1,0 +1,6 @@
+keos_kernel
+target
+.gdbinit
+blk.bin
+.vscode
+gKeOS
