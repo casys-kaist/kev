@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Error","Possible error kinds."]],"fn":[["file_system","Get a filesystem reference of the kernel."],["init_fs","Initialize the fs."]],"struct":[["File","The file."],["FileSystem","The root file system"],["FsDisk","The filesystem disk."],["Sector","Sector."]],"trait":[["Disk","A device that has byte sink."]],"type":[["File","The file."]]};

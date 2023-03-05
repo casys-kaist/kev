@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["page_table","4-level page table of x86_64."],["rr","Multicore Round-robin Scheduling."]]};

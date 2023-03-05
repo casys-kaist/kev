@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Welcome to the KeV project."><meta name="keywords" content="rust, rustlang, rust-lang, kev"><title>kev - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-94f503864730768f.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-4a084badb5778746.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../kev/index.html"><div class="logo-container"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></div></a><h2></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../kev/index.html"><div class="logo-container"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></div></a><h2 class="location"><a href="#">Crate kev</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn">Crate <a class="mod" href="#">kev</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/kev/lib.rs.html#1-251">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Welcome to the KeV project.</p>
+<p>Virtualization is an increasingly ubiquitous feature of modern computer systems,
+and a rapidly evolving part of the system stack. Hardware vendors are adding new features to support more efficient virtualization,
+OS designs are adapting to perform better in VMs, and VMs are an essential component in cloud computing.
+Thus, understanding how VMs work is essential to a complete education in computer systems.</p>
+<p>In this project, you will skim through the basic components that runs on real virtual machine monitor like KVM.
+From what you learn, you will build your own type 2 hypervisor and finally extend the hypervisor
+as an open-ended course project.</p>
+<p>In KeV project, we will not bother you from the time-consuming edge case handling and the hidden test cases.
+The score that you see when run the grading scripts is your final score.
+We want to keep this project as easy as possible.
+If you have suggestions on how we can reduce the unnecessary overhead of assignments,
+cutting them down to the important underlying issues, please let us know.</p>
+<h3 id="projects"><a href="#projects">Projects</a></h3>
+<p>The KeV project consists of 5 projects.</p>
+<ol>
+<li><a href="../project1">KeOS</a></li>
+<li><a href="../project2">VMCS and VMexits</a></li>
+<li><a href="../project3">Hardware virtualization</a></li>
+<li><a href="../project4">Interrupt and I/O virtualization</a></li>
+<li><a href="../project5">Final project</a></li>
+</ol>
+<h4 id="rust"><a href="#rust">Rust</a></h4>
+<p>We pick the Rust as a language for project. This is because we believe that after overcome the barriers to learn,
+memory safety and ownership rule of Rust could significantly reduce the debugging time while implement an operating system.</p>
+<h3 id="getting-started"><a href="#getting-started">Getting Started</a></h3>
+<p>You can bootstrap your KEOS project with following command lines.</p>
+<div class="example-wrap"><pre class="language-/bin/bash"><code>$ curl --proto &#39;=https&#39; --tlsv1.2 -sSf https://sh.rustup.rs | sh
+$ sudo apt install -yy qemu-system-x86 grub xorriso grub2-common grub-pc mtools
+$ git clone https://github.com/casys-kaist/kev
+</code></pre></div>
+<p><strong>PLEASE DO NOT MAKE ANY PUBLIC FORK OF THIS PROJECT.</strong>
+This is strongly denied from the license of the KeV Project. You <strong>MUST</strong> not redistribute
+the your works based on the given template.</p>
+<h4 id="enable-nested-virtualization"><a href="#enable-nested-virtualization">Enable nested virtualization</a></h4>
+<p>See the following docs: <a href="https://docs.fedoraproject.org/en-US/quick-docs/using-nested-virtualization-in-kvm/">https://docs.fedoraproject.org/en-US/quick-docs/using-nested-virtualization-in-kvm/</a></p>
+<h3 id="notes"><a href="#notes">Notes</a></h3><h4 id="tips-for-projects"><a href="#tips-for-projects">Tips for projects</a></h4>
+<p>We recommend to do <code>todo</code>-oriented implementations. Run the project and fill the reached <code>todo!()</code>.
+After that, run the project again and fill a new <code>todo!()</code>. Do this iteration until you passed all the testcases!
+Thanks to the rich backtrace, you can easily follow the call stack of the confronted <code>todos</code>.</p>
+<h4 id="grading"><a href="#grading">Grading</a></h4>
+<p>When we grade (except the final project), we overwrite the all the files of followings:</p>
+<ul>
+<li><code>abyss/*</code></li>
+<li><code>keos/*</code></li>
+<li><code>fs/*</code></li>
+<li><code>lib/*</code></li>
+<li><code>projects/project*/src/main.rs</code></li>
+</ul>
+<p>That is, your code MUST PASS the test cases without any change of the listed files.
+If your code is not compiled, you will get 0pts.
+Also cheating is strongly prohibited by <strong>TODO</strong>.</p>
+<h3 id="debugging-with-gdb"><a href="#debugging-with-gdb">Debugging with GDB</a></h3><h4 id="play-with-gdb"><a href="#play-with-gdb">Play with GDB</a></h4>
+<p>Once you runs <code>$ GDB=1 cargo run</code> in each <code>project</code> directory, QEMU waits for a GDB attach from TCP port 1234.
+The command also creates a <code>.gdbinit</code> script that connects to TCP port 1234 and initializes several debug configurations.
+With a new terminal, run <code>$ gdb keos_kernel</code> in each project directory will immediately start the debugging process.</p>
+<p>Before running the <code>gdb</code>, you need to edit the <code>~/.gdbinit</code> file to allow <code>gdbinit</code> script to be run.
+Add the following line in your <code>~/.gdbinit</code> file:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>set auto-load safe-path /</code></pre></div>
+<p>After running <code>gdb</code>, you will see that execution stops at the initial stage, as shown below:</p>
+<div class="example-wrap"><pre class="language-bash"><code>$ gdb
+warning: No executable has been specified and target does not support
+determining executable automatically.  Try using the &quot;file&quot; command.
+0x000000000000fff0 in ?? ()
+(gdb)
+</code></pre></div>
+<p>Now, you can continue to execute keos by type <code>c</code>.</p>
+<h5 id="inspect-each-core"><a href="#inspect-each-core">Inspect each core</a></h5>
+<p>With QEMU, GDB treats each CPU core as a thread. When debugging with a multi-core environment, you should consider each CPU core independently.
+When some cores are normal, other cores may already be panicked.
+You can see the state of each core by running the following command:
+<code>(gdb) info threads</code></p>
+<p>The output will show the state of each thread, which CPU core it belongs to, and what stack frame each core resides in.
+Here’s an example of the initial state of all cores:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) info threads
+Id   Target Id         Frame
+* <span class="number">1    </span>Thread <span class="number">1 </span>(CPU#<span class="number">0 </span>[running]) <span class="number">0x000000000000fff0 </span><span class="kw">in </span><span class="question-mark">?? </span>()
+<span class="number">2    </span>Thread <span class="number">2 </span>(CPU#<span class="number">1 </span>[running]) <span class="number">0x000000000000fff0 </span><span class="kw">in </span><span class="question-mark">?? </span>()
+<span class="number">3    </span>Thread <span class="number">3 </span>(CPU#<span class="number">2 </span>[running]) <span class="number">0x000000000000fff0 </span><span class="kw">in </span><span class="question-mark">?? </span>()
+<span class="number">4    </span>Thread <span class="number">4 </span>(CPU#<span class="number">3 </span>[running]) <span class="number">0x000000000000fff0 </span><span class="kw">in </span><span class="question-mark">?? </span>()</code></pre></div>
+<p>To switch to a specific thread, use the following command:</p>
+<p><code>(gdb) thread {thread_id}</code></p>
+<p>Replace <code>{thread_id}</code> with the ID of the thread you’re interested in.</p>
+<h5 id="backtrace--frame"><a href="#backtrace--frame">Backtrace &amp; Frame</a></h5>
+<p>The <code>backtrace</code> command shows the call stack of the current thread.
+The call stack is divided into several stack frames, each of which has its own state information about the execution stack and registers when calling the function which is matched to the next upper frame.
+To show the call stack of the current thread, use the following command:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) bt</code></pre></div>
+<p>To switch to a specific frame from the backtrace result, use the following command:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) frame {frame_id}</code></pre></div>
+<p>Replace <code>{frame_id}</code> with the ID of the frame you’re interested in. After switching to the target frame, you can extract the frame context using the following commands:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) info args
+(gdb) info locals
+(gdb) i r</code></pre></div>
+<p>When you encounter a panic message during a test, the first step is to identify the thread that triggered the panic and switch to it.
+Next, using the backtrace command, you can identify the frames that are likely to have caused the panic and examine the local variables, arguments, and other registers.
+By following the steps, you can narrow down the potential locations of the bug and ultimately pinpoint the source of the error.</p>
+<p>Normal breakpoints may not be work. You should use hardware breakpoints to set up a breakpoint as follow.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) hb * {address of breakpoint}</code></pre></div>
+<p>You also see the source that the current cpu is executed by typing follow commands:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) layout asm
+(gdb) layout src</code></pre></div>
+<h4 id="examples"><a href="#examples">Examples</a></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) hbreak function_name 	# ex) (gdb) hbreak Rounrobin::new
+(gdb) hbreak <span class="kw-2">*</span>address		# ex) (gdb) hbreak <span class="kw-2">*</span><span class="number">0x1000
+</span>(gdb) hbreak (file:)line	# ex) (gdb) hbreak rr.rs:<span class="number">95		</span><span class="comment">// file name can be ommitted</span></code></pre></div>
+<h5 id="example-1"><a href="#example-1">Example 1</a></h5>
+<p>Assume you want to debug from the test case <code>check_affinity</code> in project1, and the code spot you want to debug is the closure entry at <code>main.rs:115</code>. You can easily set a breakpoint with the commands below.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) hbreak main.rs:<span class="number">115
+</span>or
+(gdb) hbreak check_affinity::{{closure}}</code></pre></div>
+<p>If you want to care only one core, it would be nice to set a breakpoint with <code>thread apply</code> like below.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) thread apply <span class="number">1 </span>hbreak main.rs:<span class="number">115
+</span>(gdb) c
+Continuing.
+Thread <span class="number">1 </span>hit Breakpoint <span class="number">1</span>, project1::round_robin::check_affinity::{{closure}} () at project1/src/main.rs:<span class="number">115
+115                     </span><span class="kw">let </span>_p = InterruptGuard::new();</code></pre></div>
+<p>If you want to set an additional breakpoint for the same function, peek some source and then set a breakpoint with only the line number.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) l
+<span class="number">110             </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..MAX_CPU {
+<span class="number">111                 </span><span class="comment">// Diable all cores&#39; interrupt.
+</span><span class="number">112                 </span><span class="kw">let </span>cnt = cnt.clone();
+<span class="number">113                 </span><span class="kw">let </span>scheduler = scheduler.clone();
+<span class="number">114                 </span><span class="kw">let </span>handle = ThreadBuilder::new(<span class="macro">format!</span>(<span class="string">&quot;t{}&quot;</span>, i)).spawn(<span class="kw">move </span>|| {
+<span class="number">115                     </span><span class="kw">let </span>_p = InterruptGuard::new();
+&lt; ....&gt;
+<span class="number">127                         </span>} <span class="kw">else if </span><span class="kw-2">*</span>c % MAX_CPU == cid {
+<span class="number">128                             </span>scheduler.push_to_queue(Thread::new(cid.to_string()));
+<span class="number">129                             </span><span class="kw-2">*</span>c += <span class="number">1</span>;
+(gdb) thread apply <span class="number">1 </span><span class="kw">break </span><span class="number">128
+</span>(gdb) c
+Continuing.
+Thread <span class="number">1 </span>hit Breakpoint <span class="number">1</span>, project1::round_robin::check_affinity::{{closure}} () at project1/src/main.rs:<span class="number">128
+128                             </span>scheduler.push_to_queue(Thread::new(cid.to_string()));</code></pre></div>
+<h5 id="example-2"><a href="#example-2">Example 2</a></h5>
+<p>With a hardware breakpoint for an address, you can stop in a guest code section.</p>
+<p>In project2, the host copies guest code to newly allocated pages which start with GVA: <code>0x4000</code>. If you set a breakpoint with the command <code>(gdb) hbreak *0x4000</code>, you can stop at the entry of the guest code.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>&lt;.....&gt;
+<span class="number">0x000000000000fff0 </span><span class="kw">in </span><span class="question-mark">?? </span>()
+(gdb) hbreak <span class="kw-2">*</span><span class="number">0x4000
+</span>Hardware assisted breakpoint <span class="number">1 </span>at <span class="number">0x4000
+</span>(gdb) c
+Continuing.
+
+Thread <span class="number">1 </span>hit Breakpoint <span class="number">1</span>, <span class="number">0x0000000000004000 </span><span class="kw">in </span><span class="question-mark">?? </span>()
+(gdb) x/<span class="number">4i </span><span class="macro-nonterminal">$rip
+</span>=&gt; <span class="number">0x4000</span>:      mov    $<span class="number">0xcafe</span>,%edi
+ <span class="number">0x4005</span>:      xor    %eax,%eax
+ <span class="number">0x4007</span>:      vmcall
+ <span class="number">0x400a</span>:      add    %al,(%rax)
+(gdb)</code></pre></div>
+<p>The above shows that the guest will execute a <code>vmcall</code> instruction to stop the vcpu execution with an exit code 0xcafe, and the instructions being executed are fetched from GVA: <code>0x4000</code>.</p>
+<h5 id="example-3"><a href="#example-3">Example 3</a></h5>
+<p>If you want to stop at a breakpoint for certain situation, you can add some condition on the breakpoint.</p>
+<p>The example below stops at walk when the parameter gpa passed is 0xcafe0000.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>(gdb) hbreak walk <span class="kw">if </span>gpa.__0 == <span class="number">0xcafe0000
+</span>Hardware assisted breakpoint <span class="number">3 </span>at <span class="number">0xffffff0000197721</span>: file project3/src/ept.rs, line <span class="number">539.
+</span>(gdb) c
+Continuing.
+
+Thread <span class="number">2 </span>hit Breakpoint <span class="number">3</span>, project3::ept::ExtendedPageTable::walk (<span class="self">self</span>=<span class="number">0xffffff0002cad338</span>, gpa=kev::vm::Gpa (<span class="number">3405643776</span>))
+  at project3/src/ept.rs:<span class="number">539
+539             </span><span class="kw">if </span>gpa_ &amp; <span class="number">0xFFF </span>!= <span class="number">0 </span>{</code></pre></div>
+<p>With breakpoint condition, you can skip other function call with arguments that are not what you are interested.</p>
+</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="kev" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (c7572670a 2023-01-03)" data-search-js="search-181581080540673f.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-58836c674e2f7bd2.css" ></div></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["smplock","SMP-supported spinlock."]]};

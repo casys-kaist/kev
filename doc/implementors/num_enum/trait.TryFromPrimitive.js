@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"abyss":[["impl <a class=\"trait\" href=\"num_enum/trait.TryFromPrimitive.html\" title=\"trait num_enum::TryFromPrimitive\">TryFromPrimitive</a> for <a class=\"enum\" href=\"abyss/dev/pci/virtio/enum.DeviceType.html\" title=\"enum abyss::dev::pci::virtio::DeviceType\">DeviceType</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

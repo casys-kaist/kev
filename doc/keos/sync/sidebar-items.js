@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["SpinLock","A mutual exclusion primitive useful for protecting shared data"],["SpinLockGuard","An RAII implementation of a “scoped lock” of a spinlock. When this structure is dropped (falls out of scope), the lock will be unlocked."]]};

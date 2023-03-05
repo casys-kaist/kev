@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["scheduler","Get the reference of the kernel"],["set_scheduler","Set the scheduler of the kernel."],["start_idle","Transmute this thread into the idle."]],"trait":[["Scheduler","Common features of thread scheduler."]]};

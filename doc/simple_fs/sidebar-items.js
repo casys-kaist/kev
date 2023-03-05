@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["Error","Possible error kinds."]],"struct":[["File","The file."],["FileSystem","The root file system"],["Sector","Sector."]],"trait":[["Disk","A device that has byte sink."]]};
