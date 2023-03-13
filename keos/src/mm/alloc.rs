@@ -57,6 +57,7 @@ unsafe impl GlobalAlloc for Allocator {
                 (layout.size() + PAGE_MASK) & !PAGE_MASK,
             );
         } else {
+            return; // BUG: slob has a bug. Mitigate by not freeing now.
             // perform layout adjustments
             let (size, _) = SlobAllocator::align_to_slob_node(layout);
 
