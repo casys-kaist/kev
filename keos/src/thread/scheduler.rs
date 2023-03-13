@@ -34,7 +34,6 @@ impl dyn Scheduler {
     pub fn reschedule(&self) {
         let _p = Thread::pin();
         if let Some(th) = self.next_to_run() {
-            drop(_p);
             th.run();
         } else {
             unsafe {

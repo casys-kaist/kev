@@ -1,8 +1,8 @@
 //! Kernel print utilities.
 
 use crate::dev::x86_64::serial::Serial;
+use crate::spin_lock::SpinLock;
 use core::fmt::Write;
-use spin_lock::SpinLock;
 
 static SERIAL: SpinLock<Serial> = SpinLock::new(Serial::new());
 

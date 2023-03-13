@@ -176,7 +176,7 @@ impl SegmentSelector {
 
     /// Pack the SegmentSelector into a word.
     #[inline]
-    pub(crate) fn pack(self) -> u16 {
+    pub const fn pack(self) -> u16 {
         self.0
     }
 

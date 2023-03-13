@@ -8,11 +8,11 @@
 pub mod channel;
 pub mod scheduler;
 
-use abyss::interrupt::InterruptGuard;
+use abyss::{interrupt::InterruptGuard, x86_64::intrinsics::cpuid};
 use alloc::{boxed::Box, string::String, sync::Arc};
 use core::{
     arch::asm,
-    sync::atomic::{AtomicU64, Ordering},
+    sync::atomic::{AtomicI32, AtomicU64, Ordering},
 };
 
 /// Size of each thread's stack.
@@ -38,7 +38,7 @@ pub(crate) struct ThreadStack {
 }
 
 /// A possible state of the thread.
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum ThreadState {
     /// Thread is runnable.
     Runnable,
@@ -67,12 +67,9 @@ pub struct Thread {
     /// Thread name
     pub name: String,
     /// State of the thread.
-    pub(crate) state: ThreadState,
+    pub state: ThreadState,
+    pub(crate) running_cpu: Arc<AtomicI32>,
     pub(crate) exit_status: Arc<AtomicU64>,
-    #[doc(hidden)]
-    pub schedule_in_hook: Option<Box<dyn Fn()>>,
-    #[doc(hidden)]
-    pub schedule_out_hook: Option<Box<dyn Fn()>>,
 }
 
 impl Thread {
@@ -91,8 +88,7 @@ impl Thread {
             name: String::from(name),
             state: ThreadState::Runnable,
             exit_status: Arc::new(AtomicU64::new(0)),
-            schedule_in_hook: None,
-            schedule_out_hook: None,
+            running_cpu: Arc::new(AtomicI32::new(-1)),
         })
     }
 
@@ -118,11 +114,15 @@ impl Thread {
         let _p = abyss::interrupt::InterruptGuard::new();
         let next_sp = self.sp;
         let current_sp = with_current(|th| {
-            if let Some(hook) = &th.schedule_out_hook {
-                hook()
+            while self.running_cpu.load(Ordering::SeqCst) != -1 {
+                core::hint::spin_loop()
             }
             &mut th.sp as *mut usize
         });
+        assert_eq!(
+            abyss::interrupt::InterruptState::current(),
+            abyss::interrupt::InterruptState::Off
+        );
         context_switch_trampoline(current_sp, next_sp)
     }
 
@@ -149,6 +149,7 @@ where
 {
     // Define any member you need.
     exit_status: Arc<AtomicU64>,
+    running_cpu: Arc<AtomicI32>,
 }
 
 impl JoinHandle {
@@ -157,6 +158,7 @@ impl JoinHandle {
         // Project1: Fill this function.
         Self {
             exit_status: th.exit_status.clone(),
+            running_cpu: th.running_cpu.clone(),
         }
     }
 
@@ -167,6 +169,16 @@ impl JoinHandle {
             if v >= 0x8000_0000_0000_0000 {
                 return v as i32;
             }
+        }
+    }
+
+    /// Get scheudled cpu id of the underlying thread.
+    ///
+    /// If the thread is not runnig, returns None.
+    pub fn try_get_running_cpu(&self) -> Option<usize> {
+        match self.running_cpu.load(Ordering::SeqCst) {
+            v if v < 0 => None,
+            v => Some(v as usize),
         }
     }
 }
@@ -186,6 +198,10 @@ impl ParkHandle {
 
     /// Consume the handle and unpark the underlying thread.
     pub fn unpark(mut self) {
+        // Wait until context switch is finished.
+        while self.th.running_cpu.load(Ordering::SeqCst) != -1 {
+            core::hint::spin_loop()
+        }
         self.th.state = ThreadState::Runnable;
         scheduler::scheduler().push_to_queue(self.th);
     }
@@ -228,6 +244,10 @@ unsafe extern "C" fn context_switch_trampoline(_current_sp: *mut usize, _next_sp
 }
 
 unsafe extern "C" fn finish_context_switch(prev: &'static mut Thread) {
+    assert_eq!(
+        abyss::interrupt::InterruptState::current(),
+        abyss::interrupt::InterruptState::Off
+    );
     match prev.state {
         ThreadState::Exited(_e) => {
             let _ = Box::from_raw(prev);
@@ -239,7 +259,7 @@ unsafe extern "C" fn finish_context_switch(prev: &'static mut Thread) {
             scheduler::scheduler().push_to_queue(th);
         }
         ThreadState::Parked => (),
-        ThreadState::Runnable => unreachable!("{:?}", prev as *const _),
+        ThreadState::Runnable => unreachable!("{:?} {:?}", prev as *const _, prev.name),
     }
     with_current(|th| {
         if th.state != ThreadState::Idle {
@@ -248,10 +268,9 @@ unsafe extern "C" fn finish_context_switch(prev: &'static mut Thread) {
         abyss::x86_64::segmentation::SegmentTable::update_tss(
             th.stack.as_mut() as *mut _ as usize + STACK_SIZE,
         );
-        if let Some(hook) = &th.schedule_in_hook {
-            hook()
-        }
+        th.running_cpu.store(cpuid() as i32, Ordering::SeqCst);
     });
+    prev.running_cpu.store(-1, Ordering::SeqCst);
 }
 
 /// Run a function `f` with current thread as an argument.
