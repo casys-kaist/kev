@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["TaskStateSegment","64bit task state segment."]]};
+window.SIDEBAR_ITEMS = {"struct":["TaskStateSegment"]};

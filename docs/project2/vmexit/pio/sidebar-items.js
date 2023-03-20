@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Direction","Direction and the Value of the instruction"],["Prefix","Possible prefix of io instruction."]],"struct":[["Controller","Pio vmexit controller."],["IoInstruction","The decoded information of io instruction."]],"trait":[["PioHandler","Trait that represent handlers for port-mapped devices."]]};
+window.SIDEBAR_ITEMS = {"enum":["Direction","Prefix"],"struct":["Controller","IoInstruction"],"trait":["PioHandler"]};

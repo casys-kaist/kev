@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["cpuid","Cpuid vmexit controller."],["hypercall","Hypercall vmexit controller."],["msr","Model-specific register vmexit controller."],["pio","Port-mapped IO vmexit controller."]]};
+window.SIDEBAR_ITEMS = {"mod":["cpuid","hypercall","msr","pio"]};

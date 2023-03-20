@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Msr","Model specific register."]]};
+window.SIDEBAR_ITEMS = {"struct":["Msr"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Gpa","Guest physical address"],["Gva","Guest virtual address"],["MsrEntry","MSR entries that can be passed through VMEXIT_MSR_LOAD_ADDR or VMEXIT_MSR_STORE_ADDR."],["Vm","The virtual machine."],["VmBuilder","Builder factory to build a virtual machine."],["VmHandle","Handle for maintaining a VM."]],"trait":[["VmOps","VmState neutral Vm operations."],["VmState","Per-vm private state."]]};
+window.SIDEBAR_ITEMS = {"struct":["Gpa","Gva","MsrEntry","Vm","VmBuilder","VmHandle"],"trait":["VmOps","VmState"]};

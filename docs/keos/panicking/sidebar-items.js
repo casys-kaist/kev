@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["load_debug_infos","Load debugging symbols from kernel image"]]};
+window.SIDEBAR_ITEMS = {"fn":["load_debug_infos"]};

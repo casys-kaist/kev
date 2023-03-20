@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["align_up","Align upwards. Returns the smallest x with alignment `align` so that x >= addr. The alignment must be a power of 2."],["init_mm","Initialize the physical memory allocator."]],"struct":[["ContigPages","A contiguous pages representation."],["Page","A Page representation."]]};
+window.SIDEBAR_ITEMS = {"fn":["align_up","init_mm"],"struct":["ContigPages","Page"]};

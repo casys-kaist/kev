@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Controller","Hypercall vmexit controller."]],"trait":[["Hypercall","Trait that represent the enumeration of supported hypercall."],["HypercallAbi","Trait that represent the hypercall abi."]]};
+window.SIDEBAR_ITEMS = {"struct":["Controller"],"trait":["Hypercall","HypercallAbi"]};

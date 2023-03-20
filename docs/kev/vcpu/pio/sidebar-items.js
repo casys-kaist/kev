@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Pio","A Port-mapped io."]]};
+window.SIDEBAR_ITEMS = {"struct":["Pio"]};

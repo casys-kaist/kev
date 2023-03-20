@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DeviceType","Device Types."]],"mod":[["block","VirtIO Block device driver."],["pci",""],["virt_queue",""]],"struct":[["IsrCfg",""],["QueueBuilder",""],["QueueScope",""],["Status","VirtIo Device Status."],["VirtIoDevice",""],["VirtIoFeaturesCommon",""]],"trait":[["VirtIoDeviceFeature",""]]};
+window.SIDEBAR_ITEMS = {"enum":["DeviceType"],"mod":["block","pci","virt_queue"],"struct":["IsrCfg","QueueBuilder","QueueScope","Status","VirtIoDevice","VirtIoFeaturesCommon"],"trait":["VirtIoDeviceFeature"]};

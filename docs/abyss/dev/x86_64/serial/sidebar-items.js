@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["init","Initialize a serial."]],"struct":[["Serial",""]]};
+window.SIDEBAR_ITEMS = {"fn":["init"],"struct":["Serial"]};

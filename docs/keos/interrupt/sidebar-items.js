@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["register","Register interrupt handler"]]};
+window.SIDEBAR_ITEMS = {"fn":["register"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["init","Initialize the timer system."],["set_tsc_timer","Program the deadline timer."]]};
+window.SIDEBAR_ITEMS = {"fn":["init","set_tsc_timer"]};

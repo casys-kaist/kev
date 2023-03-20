@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Hypercall","Supported hypercalls."]],"struct":[["HypercallCtx","Hypercall context."]]};
+window.SIDEBAR_ITEMS = {"enum":["Hypercall"],"struct":["HypercallCtx"]};

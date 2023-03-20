@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["bootup_mps","Bootup the mps."]],"struct":[["Region","A physically contigous memory region."],["Regions",""]]};
+window.SIDEBAR_ITEMS = {"fn":["bootup_mps"],"struct":["Region","Regions"]};

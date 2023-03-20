@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["hypercall","Hypercalls for project 2."],["msr","MSR handlers to test msr instructions correctly implemented."],["no_ept_vm","Virtual machine control structure."],["pio","Pio handlers to test pio instructions correctly implemented."],["vmexit","Collections of vmexit controllers."]],"struct":[["PrinterProxy","The proxied printer."]]};
+window.SIDEBAR_ITEMS = {"mod":["hypercall","msr","no_ept_vm","pio","vmexit"],"struct":["PrinterProxy"]};

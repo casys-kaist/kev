@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["GlobalDescriptorTable","Global descriptor table."],["InterruptDescriptorTable","Table of interrupt descriptors."],["LocalDescriptorTable","Local descriptor table."],["SystemTableRegister","X86_64’s system table register."]]};
+window.SIDEBAR_ITEMS = {"struct":["GlobalDescriptorTable","InterruptDescriptorTable","LocalDescriptorTable","SystemTableRegister"]};

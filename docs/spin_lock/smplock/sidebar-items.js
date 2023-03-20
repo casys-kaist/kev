@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["TryLockError","An enumeration of possible errors associated while trying to acquire a lock, from the `try_lock` method on a `SpinLock`."]],"struct":[["SpinLock","A mutual exclusion primitive useful for protecting shared data"],["SpinLockGuard","An RAII implementation of a “scoped lock” of a spinlock. When this structure is dropped (falls out of scope), the lock will be unlocked."]]};
+window.SIDEBAR_ITEMS = {"enum":["TryLockError"],"struct":["SpinLock","SpinLockGuard"]};

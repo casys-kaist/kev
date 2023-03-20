@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["PAGE_MASK","Mask for page offset."],["PAGE_SHIFT","Shift amount to get page index."],["PAGE_SIZE","Page size."]],"struct":[["Pa","Physical address"],["Va","Virtual address"]]};
+window.SIDEBAR_ITEMS = {"constant":["PAGE_MASK","PAGE_SHIFT","PAGE_SIZE"],"struct":["Pa","Va"]};

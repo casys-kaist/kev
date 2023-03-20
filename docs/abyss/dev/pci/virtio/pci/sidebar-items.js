@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["PciCapabilityType",""]],"fn":[["try_get_configurations",""]],"struct":[["NotifyCfgTriple",""],["PciTransport",""],["VirtIoIsrCfg","4.1.4.5 ISR status capability"],["VirtIoNotifyCfg","2.7.23 Driver notifications"],["VirtIoPciCommonCfg","4.1.4.3 Common configuration structure layout"]]};
+window.SIDEBAR_ITEMS = {"enum":["PciCapabilityType"],"fn":["try_get_configurations"],"struct":["NotifyCfgTriple","PciTransport","VirtIoIsrCfg","VirtIoNotifyCfg","VirtIoPciCommonCfg"]};
