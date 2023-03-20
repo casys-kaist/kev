@@ -3,12 +3,12 @@
 //! Virtual machine control data structures (VMCS) are structures used by x86 during virtual machine execution.
 //! VMCS stores detailed information on how a virtual machine will operate,
 //! including its CPU and memory, IO configurations, interrupt handling, and other hardware settings.
-//! The configuration for the VMCS in Project 2 is called "no_ept_vm." This setup does not use Extended Page Tables (EPT),
-//! and instead directly maps guest physical addresses to the corresponding host physical addresses.
+//! The configuration for the VMCS in Project 2 is called "no_ept_vm." This setup does not virtualize the memory,
+//! and instead directly maps guest virtual addresses to the corresponding host virtual addresses.
 //!
 //! ## Tasks
 //! In this project, you are required to configure the guest CR3 and RIP registers.
-//! The guest page tagble is stored at the vbsp_vcpu_state.mem.page_table.
+//! The guest page table is stored at the vbsp_vcpu_state.mem.page_table.
 //! Setting the guest RIP register should be set to the entry point of the guest virtual machine.
 //!
 //! If you implement the page table in project 1 incorrectly, even if you pass the test cases,

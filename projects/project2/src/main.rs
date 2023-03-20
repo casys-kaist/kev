@@ -19,12 +19,12 @@ pub unsafe fn main() {
     keos::do_tests(&[
         &tests::hypercall::hypercall_exit,
         &tests::hypercall::hypercall_print,
-        &tests::cpuid::cpuid_leaf_0,
-        &tests::cpuid::cpuid_leaf_1,
         &tests::pio::pio_print,
         &tests::pio::pio_dx_port,
         &tests::pio::pio_imm8_port,
         &tests::pio::pio_mem,
+        &tests::cpuid::cpuid_leaf_0,
+        &tests::cpuid::cpuid_leaf_1,
         &tests::msr::msr,
     ]);
 }

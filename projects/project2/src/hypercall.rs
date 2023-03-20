@@ -21,8 +21,10 @@
 //! hypercall request to the [`HypercallAbi::handle`]. The [`HypercallAbi::handle`] then finally handles the given requests.
 //!
 //! ## Tasks
-//! For this project, you are required to implement two hypercalls: the first halts the current vCPU, while the second prints a string to the console.
-//! The detailed Application Binary Interface (ABI) for each hypercall can be founded in the [Hypercall] code section.
+//! For this part, you are required to implement two hypercalls: the first halts the current vCPU, while the second prints a string to the console.
+//! The detailed Application Binary Interface (ABI) for each hypercall can be founded in the [`Hypercall`] code section.
+//! When you write to the console, you **MUST** proxy the console output through the [`PrinterProxy`].
+//! Otherwise, grading script may be failed.
 //!
 //! [`HypercallAbi`]: crate::vmexit::hypercall::HypercallAbi
 //! [`HypercallAbi::handle`]: crate::vmexit::hypercall::HypercallAbi::handle
@@ -33,7 +35,7 @@
 //! [`ExitReason`]: kev::vmcs::ExitReason
 //! [`VmOps`]: kev::vm::VmOps
 //!
-use crate::vmexit::hypercall;
+use crate::{vmexit::hypercall, PrinterProxy};
 use core::fmt::Write;
 use kev::{
     vcpu::{GenericVCpuState, VmexitResult},

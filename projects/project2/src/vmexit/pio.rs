@@ -6,10 +6,17 @@
 //! There are different variations of the in/out instructions, depending on the type and size of the operands used.
 //!
 //! In virtual machine management, the VMM can choose to allow or trap port-mapped I/O instructions executed by the guest.
-//! In this specific project, all such instructions are trapped to the host, giving the VMM control over their behavior.
+//! However, in this section, all I/O instructions are trapped to the host, giving the VMM control over their behavior
+//! to hand-on the concept of the instruction emulation.
+//!
+//! Instruction emulation contains two steps; 1) decode the "semantic" of the instruction; 2) emulate the "semantic" of the instruction.
+//! Through the implementation, you could follow the way that traditional virtualization emulates the instruction.
 //!
 //! ## Tasks
-//! In project2, You need to decode the 18 in/out instructions. Initialize the [`IoInstruction`] instance with the corresponding opcode and registers.
+//! In this part, You need to emulate the 18 in/out instructions.
+//! The given template conducts the step 2, emulation.
+//!
+//! Decode the instruction and initialize the [`IoInstruction`] instance with the corresponding opcode and registers.
 //! The controller will then use this information to forward the request to the appropriate handler.
 //! When handling Outsw_DX_m8, Outsw_DX_m16 and Outsd_DX_m32, it is necessary to copy the memory contents by translating guest virtual address to host virtual address.
 //! You can translate the guest address to the host address by [`Probe`].

@@ -133,13 +133,13 @@
 //! $ cargo run --target ../.cargo/x86_64-unknown-keos.json
 //! ```
 //! ## Outline
-//! - [`Virtual Machine Control Structure`]
+//! - [`Virtual Machine Control Structure (VMCS)`]
 //! - [`Hypercall`]
-//! - [`Cpuid`]
 //! - [`Port-mapped I/O`]
+//! - [`Cpuid`]
 //! - [`Model-specific Register`]
 //!
-//! [`Virtual Machine Control Structure`]: no_ept_vm
+//! [`Virtual Machine Control Structure (VMCS)`]: no_ept_vm
 //! [`Hypercall`]: hypercall
 //! [`Cpuid`]: vmexit/cpuid
 //! [`Port-mapped I/O`]: vmexit/pio
