@@ -1,4 +1,5 @@
 (function() {var implementors = {
 "abyss":[["impl AddAssign&lt;usize&gt; for <a class=\"struct\" href=\"abyss/addressing/struct.Va.html\" title=\"struct abyss::addressing::Va\">Va</a>"],["impl AddAssign&lt;usize&gt; for <a class=\"struct\" href=\"abyss/addressing/struct.Pa.html\" title=\"struct abyss::addressing::Pa\">Pa</a>"]],
-"iced_x86":[["impl AddAssign&lt;i32&gt; for <a class=\"enum\" href=\"iced_x86/enum.Register.html\" title=\"enum iced_x86::Register\">Register</a>"],["impl AddAssign&lt;u32&gt; for <a class=\"enum\" href=\"iced_x86/enum.Register.html\" title=\"enum iced_x86::Register\">Register</a>"]]
+"iced_x86":[["impl AddAssign&lt;i32&gt; for <a class=\"enum\" href=\"iced_x86/enum.Register.html\" title=\"enum iced_x86::Register\">Register</a>"],["impl AddAssign&lt;u32&gt; for <a class=\"enum\" href=\"iced_x86/enum.Register.html\" title=\"enum iced_x86::Register\">Register</a>"]],
+"kev":[["impl AddAssign&lt;usize&gt; for <a class=\"struct\" href=\"kev/vm/struct.Gva.html\" title=\"struct kev::vm::Gva\">Gva</a>"],["impl AddAssign&lt;usize&gt; for <a class=\"struct\" href=\"kev/vm/struct.Gpa.html\" title=\"struct kev::vm::Gpa\">Gpa</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

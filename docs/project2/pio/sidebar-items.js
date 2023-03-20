@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["PioHandlerDummy","emulation of the device that prints the port & direction."],["PioHandlerPrint","emulation of the device that print the character of the operand in Out instruction."],["PioHandlerQueue","emulation of device that tests all In/Out/Ins/Outs instruction family with three queues."]]};

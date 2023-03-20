@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["VmexitController","Controller that defines action on vmexit."]]};

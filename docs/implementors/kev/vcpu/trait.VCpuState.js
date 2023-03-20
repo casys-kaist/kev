@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"project2":[["impl <a class=\"trait\" href=\"kev/vcpu/trait.VCpuState.html\" title=\"trait kev::vcpu::VCpuState\">VCpuState</a> for <a class=\"struct\" href=\"project2/no_ept_vm/struct.NoEptVcpuState.html\" title=\"struct project2::no_ept_vm::NoEptVcpuState\">NoEptVcpuState</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

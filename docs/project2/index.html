@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Project 2: VMCS and VMExits."><meta name="keywords" content="rust, rustlang, rust-lang, project2"><title>project2 - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-94f503864730768f.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-4a084badb5778746.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../project2/index.html"><div class="logo-container"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></div></a><h2></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../project2/index.html"><div class="logo-container"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></div></a><h2 class="location"><a href="#">Crate project2</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1 class="fqn">Crate <a class="mod" href="#">project2</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/project2/lib.rs.html#1-215">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Project 2: VMCS and VMExits.</p>
+<p>In the second project, you will implement the basic building blocks of the virtualization.
+Although the hardware-based virtualization gives a safe and convinient way to support virtualize the machine,
+it is not a perfect tool.</p>
+<p>Some less-frequently used and safety sensitive operations are required to be trap-and-emulated.
+Examples of such sensitive instructions include cpuid, port-mapped I/O, and memory-mmaped I/O.</p>
+<p>Some operations have high cost to trap-and-emulate multiple steps, they are optimization that combines multiple operations into a single operation called hypercall.</p>
+<p>You will learn about multiple trap-and-emulate operations by implementing a simple print function in three different ways:
+hypercall, port-mapped I/O and memory-mapped I/O. In project2, you will play on first two, hypercall and port-mapped I/O.</p>
+<p>Also, you will learn the concepts of instruction emulation.
+Some instructions (e.g. cpuid, rdmsr, wrmsr) are sensitive to run directly on guest cpu or required some modifications.
+The VMM requires to trap-and-emulate those instructions.</p>
+<p>While hands-on the project, you will become familiar with kev’s infrastructure and the concepts of VMCS and VMExit.</p>
+<h3 id="background"><a href="#background">Background</a></h3><h4 id="virtual-machine"><a href="#virtual-machine">Virtual machine</a></h4>
+<p>A virtual machine is an physical computer system that provides virtualized hardware resources.
+The virtual resources, such as CPU, memory, storage, and network interfaces, are presented to guest operating systems and applications as if they were physically present.
+By running on top of a virtual machine, normal programs and operating systems can be executed using these virtual resources.</p>
+<p>Multiple virtual machines can be operated on a single physical machine,
+and the distribution of physical resources to virtual machines is managed by a software layer called a Virtual Machine Monitor (VMM), also known as a Hypervisor.
+The VMM provides a layer of abstraction between the virtual machines and the underlying physical hardware, enabling physical resources to be shared among all VMs.
+Each VM environment is isolated from other VMs, so they do not know about each other and are unaware that they are controlled by the VMM.</p>
+<p>Modern CPU architectures, such as those from Intel and AMD, provide hardware virtualization support that enables system engineers to design custom virtual machine environments.
+By utilizing hardware-assisted virtualization, guest virtual machines can securely and efficiently access physical resources provided by the host machine.
+In the KeV projects, we will utilizes the Intel’s hardware virtualization, called Intel VM-eXtension (Intel VMX).</p>
+<h4 id="vm-exit"><a href="#vm-exit">VM Exit</a></h4>
+<p>Hardware virtualization is achieved by dividing the execution context into two modes: host (VMX-root mode in Intel VMX) and guest (VMX-non-root mode in Intel VMX).
+The VM Exit and VM Entry events facilitate mode switching between these two contexts. When a virtual machine operation is executed in non-root mode,
+certain sensitive instructions or events may trigger a VM exit, which transfers control from the guest os context to the host os context.</p>
+<p>When a VM exit occurs, the VMM takes control and decides how to handle the sensitive operation or event.
+The VMM may emulate the operation, modify the operation to suit the virtualized environment, or defer the operation to the underlying hardware.
+After the operation is handled, the VMM can choose to resume execution in the non-root context.</p>
+<h4 id="virtual-machine-control-data-structure-intel-vmx"><a href="#virtual-machine-control-data-structure-intel-vmx">Virtual Machine Control data Structure (Intel VMX)</a></h4>
+<p>Virtual machine control data structures (VMCS) are structures used by x86 during virtual machine execution.
+VMCS stores detailed information on how a virtual machine will operate and its internal states, including its CPU and memory, IO configurations, interrupt handling, and other hardware settings.</p>
+<p>Virtual machine monitor (VMM) can control and read hardware features by assigning difference VMCS to each virtual machine virtual processors.
+For instance, a virtual machine with four virtual cores would use four VMCS to control each core’s functionality.</p>
+<p>To provide VMM with an abstract specification of the VMCS, which has difference data structures across processor vendors and versions,
+hypervisor access to VMCS is made through special instructions called <code>vmwrite</code> and <code>vmread</code>.
+<code>vmwrite</code> writes to a specific field of the activated VMCS and <code>vmread</code> reads a specific field of the activated VMCS.
+Therefore, x86 provides ways to access and distinguish which VMCS is currently being set by the hypervisor.
+To this end, the VMCS states of Active, Current, and Clear have been added.
+In this project, hardware and software details for VMCS execution states and its associated instructions are hided from you.</p>
+<h3 id="kev"><a href="#kev">KeV</a></h3>
+<p>KeV supplies a layer to abstraction to access the hardware-specific details.
+It provides abstractions of Virtual Machine (<a href="../kev/vm/struct.Vm.html"><code>Vm</code></a>) and virtual CPU (<a href="../kev/vcpu/struct.VCpu.html"><code>VCpu</code></a>).</p>
+<h4 id="vm"><a href="#vm">Vm</a></h4>
+<p>The <a href="../kev/vm/struct.Vm.html"><code>Vm</code></a> is an abstraction of a virtual machine. It contains multiple virtual CPUs and its internal states.
+You can interact with the <a href="../kev/vm/struct.Vm.html"><code>Vm</code></a> instance with the trait <a href="../kev/vm/trait.VmOps.html"><code>VmOps</code></a>, which defines the mutiple operations of a
+Virtual Machine. See the <a href="../kev/vm/trait.VmOps.html"><code>VmOps</code></a> for list of the operations.</p>
+<h4 id="vcpu"><a href="#vcpu">VCpu</a></h4>
+<p>The <a href="../kev/vcpu/struct.VCpu.html"><code>VCpu</code></a> is an abstraction of a single virtual CPU. It holds the states to run virtual CPU, including
+VMCS, general purpose registers, virtual CPU ID, and VM Exit handlers.
+Each <a href="../kev/vcpu/struct.VCpu.html"><code>VCpu</code></a> is an entity of scheudling. That is, it is a basically a thread of a host operating system!</p>
+<p>The VCpu thread runs in a loop that launch the VCpu, and handle the VM Exit.
+In the loop, the thread launches the guest operating system through <code>vmlaunch</code> or <code>vmresume</code>.
+After that, guest os traps back to the vmm by VM Exit, it resolves the reason of the VM Exit,
+handles the VM Exit, and returns back to the guest operating system.
+You can found the details of the loop on <a href="../kev/vm/struct.Vm.html#method.vcpu_thread_work"><code>Vm::vcpu_thread_work</code></a>.</p>
+<h4 id="guest-memory-abstraction"><a href="#guest-memory-abstraction">Guest Memory Abstraction</a></h4>
+<p>With the introduction of the guest operating system, KeV brings two terms: guest physical address (<a href="../kev/vm/struct.Gpa.html"><code>Gpa</code></a>)
+and guest virtual addresss (<a href="../kev/vm/struct.Gva.html"><code>Gva</code></a>).</p>
+<p>In project 2, all you need to mind is that there is no guest physical address and guest virtual address is
+same as a host virtual address because we are not introduce the memory virtualization yet.
+We will revisit this topics in project 3 with memory virtualiation.</p>
+<h4 id="vmexitcontroller"><a href="#vmexitcontroller">VmexitController</a></h4>
+<p>The <a href="../kev/vmexits/trait.VmexitController.html"><code>VmexitController</code></a> is the core interface to play with the VM Exits.
+It is a trait define as follow:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">pub trait </span>VmexitController {
+   <span class="doccomment">/// Handle the vmexit on this controller.
+   ///
+   /// Returns [`VmError::HandleVmexitFailed`] when failed to handle vmexit on this controller.
+   </span><span class="kw">fn </span>handle&lt;P: Probe&gt;(
+       <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+       reason: ExitReason,
+       p: <span class="kw-2">&amp;mut </span>P,
+       generic_vcpu_state: <span class="kw-2">&amp;mut </span>GenericVCpuState,
+   ) -&gt; <span class="prelude-ty">Result</span>&lt;VmexitResult, VmError&gt;;
+}</code></pre></div>
+<p>The VmexitController trait requires four arguments as input parameters</p>
+<ul>
+<li>&amp;mut self: Contains the self object of the given controller structure. You can holds controller-specific states in <code>self</code>.</li>
+<li>reason: Argument represents the <a href="../kev/vmcs/enum.ExitReason.html"><code>ExitReason</code></a> that holds the exit reasons for the current vm exit.
+For instance, if the current vcpu is a hypercall, the exit reasons would be <a href="../kev/vmcs/enum.BasicExitReason.html#variant.Vmcall"><code>BasicExitReason::Vmcall</code></a>.</li>
+<li>p: <a href="../kev/probe/trait.Probe.html"><code>Probe</code></a> object that holds an information of memory state of the guest operating system. You can use this object to translate address between guest and host operating system.</li>
+<li>generic_vcpu_state: Defines the states for the current vcpu. These states comprise the current Virtual Machine Control Structure (VMCS),
+general purpose registers (gen), and other relevant components which includes the <a href="../kev/vm/trait.VmOps.html"><code>VmOps</code></a>. See the <a href="../kev/vcpu/struct.GenericVCpuState.html"><code>GenericVCpuState</code></a>.</li>
+</ul>
+<h5 id="activevmcs"><a href="#activevmcs">ActiveVmcs</a></h5>
+<p><a href="../kev/vmcs/struct.ActiveVmcs.html"><code>ActiveVmcs</code></a> is an abstraction to communicate with the activated VMCS.
+You can read or write to the activated VMCS with this struct.
+This also defines multiple helper functions to modify the VMCS.</p>
+<p>For instance,</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// Forward to the next instruction.
+</span><span class="kw">pub fn </span>forward_rip(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), VmError&gt; {
+   <span class="self">self</span>.write(
+       Field::GuestRip,
+       <span class="self">self</span>.read(Field::GuestRip)<span class="question-mark">? </span>+ <span class="self">self</span>.read(Field::VmexitInstructionLength)<span class="question-mark">?</span>,
+   )
+}</code></pre></div>
+<p>The VMCS in this code (&amp;self) is capable of reading its internal fields to read and write the RIP information necesasry for RIP forwarding.
+As like in this example, you can read and write the VMCS structure for fetching hardware informations of virtual machine in your KeV projects.</p>
+<h3 id="getting-started"><a href="#getting-started">Getting started</a></h3>
+<p>When you run following command lines in the project2 directory, keos will be panic with “not yet implemented” message.</p>
+<div class="example-wrap"><pre class="language-/bin/bash"><code>$ cargo run --target ../.cargo/x86_64-unknown-keos.json
+</code></pre></div><h3 id="outline"><a href="#outline">Outline</a></h3>
+<ul>
+<li><a href="no_ept_vm/index.html"><code>Virtual Machine Control Structure</code></a></li>
+<li><a href="hypercall/index.html"><code>Hypercall</code></a></li>
+<li><a href="vmexit/cpuid"><code>Cpuid</code></a></li>
+<li><a href="vmexit/pio"><code>Port-mapped I/O</code></a></li>
+<li><a href="vmexit/msr"><code>Model-specific Register</code></a></li>
+</ul>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="hypercall/index.html" title="project2::hypercall mod">hypercall</a></div><div class="item-right docblock-short">Hypercalls for project 2.</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="msr/index.html" title="project2::msr mod">msr</a></div><div class="item-right docblock-short">MSR handlers to test msr instructions correctly implemented.</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="no_ept_vm/index.html" title="project2::no_ept_vm mod">no_ept_vm</a></div><div class="item-right docblock-short">Virtual machine control structure.</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="pio/index.html" title="project2::pio mod">pio</a></div><div class="item-right docblock-short">Pio handlers to test pio instructions correctly implemented.</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="vmexit/index.html" title="project2::vmexit mod">vmexit</a></div><div class="item-right docblock-short">Collections of vmexit controllers.</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.PrinterProxy.html" title="project2::PrinterProxy struct">PrinterProxy</a></div><div class="item-right docblock-short">The proxied printer.</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="project2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (c7572670a 2023-01-03)" data-search-js="search-181581080540673f.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-58836c674e2f7bd2.css" ></div></body></html>
