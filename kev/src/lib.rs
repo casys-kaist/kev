@@ -67,18 +67,20 @@
 //!
 //! Once you runs `$ GDB=1 cargo run` in each `project` directory, QEMU waits for a GDB attach from TCP port 1234.
 //! The command also creates a `.gdbinit` script that connects to TCP port 1234 and initializes several debug configurations.
-//! With a new terminal, run `$ gdb keos_kernel` in each project directory will immediately start the debugging process.
+//! With a new terminal, run `$ rust-gdb keos_kernel` in each project directory will immediately start the debugging process.
+//! We recommend to use `rust-gdb`, a prebuilt binary from rust installation.
+//! This provides more better display of the rust data types.
 //!
-//! Before running the `gdb`, you need to edit the `~/.gdbinit` file to allow `gdbinit` script to be run.
+//! Before running the `rust-gdb`, you need to edit the `~/.gdbinit` file to allow `gdbinit` script to be run.
 //! Add the following line in your `~/.gdbinit` file:
 //! ```
 //! set auto-load safe-path /
 //! ```
 //!
-//! After running `gdb`, you will see that execution stops at the initial stage, as shown below:
+//! After running `rust-gdb`, you will see that execution stops at the initial stage, as shown below:
 //!
 //! ```bash
-//! $ gdb
+//! $ rust-gdb
 //! warning: No executable has been specified and target does not support
 //! determining executable automatically.  Try using the "file" command.
 //! 0x000000000000fff0 in ?? ()
@@ -96,7 +98,7 @@
 //! The output will show the state of each thread, which CPU core it belongs to, and what stack frame each core resides in.
 //! Here's an example of the initial state of all cores:
 //!
-//! ```
+//! ```text
 //! (gdb) info threads
 //! Id   Target Id         Frame
 //! * 1    Thread 1 (CPU#0 [running]) 0x000000000000fff0 in ?? ()
@@ -151,7 +153,7 @@
 //!
 //! ### Examples
 //!
-//! ```
+//! ```text
 //! (gdb) hbreak function_name 	# ex) (gdb) hbreak Rounrobin::new
 //! (gdb) hbreak *address		# ex) (gdb) hbreak *0x1000
 //! (gdb) hbreak (file:)line	# ex) (gdb) hbreak rr.rs:95		// file name can be ommitted
@@ -179,7 +181,7 @@
 //!
 //! If you want to set an additional breakpoint for the same function, peek some source and then set a breakpoint with only the line number.
 //!
-//! ```
+//! ```text
 //! (gdb) l
 //! 110             for i in 0..MAX_CPU {
 //! 111                 // Diable all cores' interrupt.
@@ -215,9 +217,9 @@
 //! Thread 1 hit Breakpoint 1, 0x0000000000004000 in ?? ()
 //! (gdb) x/4i $rip
 //! => 0x4000:      mov    $0xcafe,%edi
-//!  0x4005:      xor    %eax,%eax
-//!  0x4007:      vmcall
-//!  0x400a:      add    %al,(%rax)
+//!    0x4005:      xor    %eax,%eax
+//!    0x4007:      vmcall
+//!    0x400a:      add    %al,(%rax)
 //! (gdb)
 //! ```
 //!
@@ -229,7 +231,7 @@
 //!
 //! The example below stops at walk when the parameter gpa passed is 0xcafe0000.
 //!
-//! ```
+//! ```text
 //! (gdb) hbreak walk if gpa.__0 == 0xcafe0000
 //! Hardware assisted breakpoint 3 at 0xffffff0000197721: file project3/src/ept.rs, line 539.
 //! (gdb) c
@@ -249,4 +251,131 @@
 //! [Final project]: ../project5
 
 #![no_std]
+#![feature(naked_functions, get_mut_unchecked)]
+#![deny(missing_docs)]
 
+extern crate alloc;
+#[macro_use]
+extern crate keos;
+
+mod probe;
+pub mod vcpu;
+pub mod vm;
+pub mod vm_control;
+#[allow(dead_code)]
+pub mod vmcs;
+pub mod vmexits;
+
+use abyss::x86_64::{msr::Msr, Cr0, Cr4};
+use alloc::boxed::Box;
+use keos::{interrupt::register, intrinsics::cpuid};
+pub use probe::Probe;
+use vm_control::*;
+use vmcs::{ExitReason, Vmcs};
+
+#[doc(hidden)]
+pub trait Bits {
+    fn bit_test(self, index: usize) -> bool;
+}
+
+impl Bits for u32 {
+    fn bit_test(self, index: usize) -> bool {
+        (self >> index) & 1 != 0
+    }
+}
+
+impl Bits for u64 {
+    fn bit_test(self, index: usize) -> bool {
+        (self >> index) & 1 != 0
+    }
+}
+
+/// Possible errorkind for Vmx.
+#[derive(Debug)]
+pub enum VmxError {
+    /// Virtual-machine eXtension is not supported.
+    VmxNotSupported,
+    /// Ept is not supported.
+    EptNotSupported,
+    /// Current Cr0 value is invalid.
+    InvalidCr0,
+    /// Current Cr4 value is invalid.
+    InvalidCr4,
+    /// Vmx is disabled in bios.
+    InvalidBiosConfig,
+    /// Vmcs operation has an error.
+    VmxOperationError(vmcs::InstructionError),
+}
+
+/// Possible errorkind for Vm.
+#[derive(Debug)]
+pub enum VmError {
+    /// Vm operation has error.
+    VmxOperationError(vmcs::InstructionError),
+    /// Failed to handle vmexit.
+    HandleVmexitFailed(ExitReason),
+    /// Controller-private error.
+    ControllerError(Box<dyn core::fmt::Debug + Send + Sync>),
+    /// Failed to decode instruction.
+    FailedToDecodeInstruction,
+    /// Vcpu related error.
+    VCpuError(Box<dyn core::fmt::Debug + Send + Sync>),
+}
+
+/// Enable the VM-eXtension on this cpu.
+pub unsafe fn start_vmx_on_cpu() -> Result<(), VmxError> {
+    (Cr4::current() | Cr4::VMXE).apply();
+    // Load vmx realated msrs.
+    let (vmx_cr0_fixed_0, vmx_cr0_fixed_1, vmx_cr4_fixed_0, vmx_cr4_fixed_1) = (
+        Cr0::from_bits_truncate(Msr::<IA32_VMX_CR0_FIXED0>::read()),
+        Cr0::from_bits_truncate(Msr::<IA32_VMX_CR0_FIXED1>::read()),
+        Cr4::from_bits_truncate(Msr::<IA32_VMX_CR4_FIXED0>::read()),
+        Cr4::from_bits_truncate(Msr::<IA32_VMX_CR4_FIXED1>::read()),
+    );
+    let (cr0, cr4) = (Cr0::current(), Cr4::current());
+    // Intel® 64 and IA-32 Architectures Software Developer’s Manual.
+    // 23.8 RESTRICTIONS ON VMX OPERATION
+    if (vmx_cr0_fixed_1 | cr0 != vmx_cr0_fixed_1) || !cr0 & vmx_cr0_fixed_0 != Cr0::empty() {
+        return Err(VmxError::InvalidCr0);
+    }
+    if (vmx_cr4_fixed_1 | cr4 != vmx_cr4_fixed_1) || !cr4 & vmx_cr4_fixed_0 != Cr4::empty() {
+        return Err(VmxError::InvalidCr4);
+    }
+
+    // Intel® 64 and IA-32 Architectures Software Developer’s Manual.
+    // 6.2.1 Detecting and Enabling SMX
+
+    // Try to enable VMX outside SMX operation.
+    let feature_control = Msr::<IA32_FEATURE_CONTROL>::read();
+    if !feature_control.bit_test(2) {
+        Msr::<IA32_FEATURE_CONTROL>::write(feature_control | (1 << 2));
+        if !feature_control.bit_test(2) {
+            return Err(VmxError::InvalidBiosConfig);
+        }
+    }
+
+    // Try to lock.
+    // Lock bit (0 = unlocked, 1 = locked). When set to '1' further writes to this MSR are blocked
+    let feature_control = Msr::<IA32_FEATURE_CONTROL>::read();
+    if !feature_control.bit_test(0) {
+        Msr::<IA32_FEATURE_CONTROL>::write(feature_control | (1 << 0));
+    }
+
+    // Intel® 64 and IA-32 Architectures Software Developer’s Manual.
+    // 23.6 DISCOVERING SUPPORT FOR VMX
+    if !core::arch::x86_64::__cpuid(1).ecx.bit_test(5) {
+        return Err(VmxError::VmxNotSupported);
+    } else if !Msr::<IA32_VMX_PROC_BASED_CTLS>::read().bit_test(63)
+        || !Msr::<IA32_VMX_PROC_BASED_CTLS>::read().bit_test(33)
+    {
+        return Err(VmxError::EptNotSupported);
+    }
+
+    if cpuid() == 0 {
+        register(100, || {});
+    }
+
+    core::mem::ManuallyDrop::new(Box::new(Vmcs::new()))
+        .on()
+        .map_err(VmxError::VmxOperationError)
+}
