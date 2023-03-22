@@ -72,7 +72,6 @@ mod tests {
                     &hcall_exit_end as *const _ as usize - &hcall_exit_start as *const _ as usize,
                 )
             });
-            assert_eq!(unsafe { &PRINTER_PROXY }, "Hello guest os!\n");
         }
 
         // print 'Hello guest os!' and exit.
@@ -103,6 +102,7 @@ mod tests {
                     &hcall_print_end as *const _ as usize - &hcall_print_start as *const _ as usize,
                 )
             });
+            assert_eq!(unsafe { &PRINTER_PROXY }, "Hello guest os!\n");
         }
     }
 
@@ -189,8 +189,9 @@ mod tests {
 
     pub mod pio {
         use core::arch::global_asm;
+        use project2::PRINTER_PROXY;
 
-        // print 'Hello pio\n' and exit.
+        // print 'Hello pio!\n' and exit.
         global_asm!(
             "pio_print_start:",
             "in al, 3",
@@ -214,7 +215,9 @@ mod tests {
             "out dx, al",
             "mov al, 0x6f",
             "out dx, al",
-            "mov al, 0x20",
+            "mov al, 0x21",
+            "out dx, al",
+            "mov al, 0xa",
             "out dx, al",
             // hcall_exit(0);
             "mov rdi, 0",
@@ -223,6 +226,7 @@ mod tests {
             "pio_print_end:",
         );
         pub fn pio_print() {
+            unsafe { PRINTER_PROXY.clear(); }
             super::run_vm::<0>(unsafe {
                 extern "C" {
                     static pio_print_start: u8;
@@ -233,6 +237,7 @@ mod tests {
                     &pio_print_end as *const _ as usize - &pio_print_start as *const _ as usize,
                 )
             });
+            assert_eq!(unsafe { &PRINTER_PROXY }, "port 3 direction InbAl\nHello pio!\n");
         }
 
         // Test for out/in (e)a(x|l), dx instructions
