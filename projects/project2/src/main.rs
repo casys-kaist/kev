@@ -50,6 +50,7 @@ mod tests {
 
     pub mod hypercall {
         use core::arch::global_asm;
+        use project2::PRINTER_PROXY;
 
         // Exit kernel with code 0xcafe.
         global_asm!(
@@ -71,6 +72,7 @@ mod tests {
                     &hcall_exit_end as *const _ as usize - &hcall_exit_start as *const _ as usize,
                 )
             });
+            assert_eq!(unsafe { &PRINTER_PROXY }, "Hello guest os!\n");
         }
 
         // print 'Hello guest os!' and exit.

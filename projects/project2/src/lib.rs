@@ -172,7 +172,7 @@ pub mod pio;
 pub mod vmexit;
 
 use alloc::string::String;
-static mut PRINTER_PROXY: String = String::new();
+pub static mut PRINTER_PROXY: String = String::new();
 
 /// The proxied printer.
 ///
