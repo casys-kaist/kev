@@ -1,3 +1,4 @@
 (function() {var implementors = {
-"project2":[]
+"project2":[],
+"project3":[["impl <a class=\"trait\" href=\"project2/vmexit/pio/trait.PioHandler.html\" title=\"trait project2::vmexit::pio::PioHandler\">PioHandler</a> for <a class=\"struct\" href=\"project3/keos_vm/dev/struct.PciPio.html\" title=\"struct project3::keos_vm::dev::PciPio\">PciPio</a>"],["impl <a class=\"trait\" href=\"project2/vmexit/pio/trait.PioHandler.html\" title=\"trait project2::vmexit::pio::PioHandler\">PioHandler</a> for <a class=\"struct\" href=\"project3/keos_vm/dev/struct.CmosPio.html\" title=\"struct project3::keos_vm::dev::CmosPio\">CmosPio</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

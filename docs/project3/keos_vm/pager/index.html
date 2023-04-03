@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Lazy loader and pager for guest virtual machine."><title>project3::keos_vm::pager - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-0ef3deca4ed45ad8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-f501212b8b071243.css"><link rel="stylesheet" disabled href="../../../static.files/dark-e92fc12c34ff89d3.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-a0090c8b1ced384f.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/main-bfa4087bf2db080e.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../project3/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../project3/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module pager</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#types">Type Definitions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">project3</a>::<wbr><a href="../index.html">keos_vm</a>::<wbr><a class="mod" href="#">pager</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../src/project3/keos_vm/pager.rs.html#1-333">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Lazy loader and pager for guest virtual machine.</p>
+<h3 id="background"><a href="#background">Background</a></h3>
+<p>Lazy loading is a technique that delays resource allocations until the resource is required.
+Lazy paging in project 3 implements the principle of lazy loading,
+which involves delaying the reading from file and loading of guest OS’s memory (such as text section of guest OS) into the host machine
+until a specific physical page of the guest is required.</p>
+<p>Lazy paging in project 3 enhances the performance of the initial booting process since there is no need to read and load all the pages
+guest OS at once. This approache also helps the reducing the memory usage of the guest OS by avoiding the allocation of memory which is not used</p>
+<p>In KeV projects, we will launch as KeOS as a guest operting system for the simplicity.
+The <code>build.rs</code> automatically build the guest KeOS (gKeOS) from the <code>guests/project3/</code>
+and build the file system from the <code>rootfs/</code> with the compiled gKeOS.</p>
+<p>KeOS’s file system is rough. It only supports file without grow.
+There is no more abstraction than file such as directory or symbolic link.</p>
+<h4 id="executable-and-linkage-format"><a href="#executable-and-linkage-format">Executable and Linkage Format</a></h4>
+<p>The ELF (Executable and Linkable Format) is a file format for executable programs in Unix-based operating systems.</p>
+<p>The ELF header contains information about the ELF metadata, type of file (executable, shared library, object file), the architecture (x86_64, ARM, …),
+the entry point (where execution should begin), and others.
+In summary, ELF header contains the following sections:</p>
+<ul>
+<li>e_type: Type of tile</li>
+<li>e_machine: Set of the machine instrutions (SPARC, x86_64, ARM, MIPS…)</li>
+<li>e_version: Version of the elf (default is 1)</li>
+<li>e_entry: Start entry of the program</li>
+<li>e_phoff: Start offset of the program header table</li>
+<li>e_phnum: Entry size of the program header
+…</li>
+</ul>
+<p>The ELF Program header (PHDR) contains the information about the program’s memory segments (sections of memory allocated for different parts of the program),
+including their virtual address, physical address, file offsets, sizes, and access permissions.
+In summary, the Program header contains the following sections:</p>
+<ul>
+<li>p_type: Type of the program header</li>
+<li>p_offset: Offset in file</li>
+<li>p_vaddr: Virtual address to be loaded</li>
+<li>p_paddr: Physical address to be loaded</li>
+<li>p_filesz: Size on file</li>
+<li>p_memsz: Size in memory</li>
+<li>p_flags: Flags for Read, Write, Execute</li>
+</ul>
+<p>The operating system (Hypervisor) loads and executes the program (Guest OS) by parsing the ELF format reading from a file.
+The operating system should parse the ELF headers to locate and load the program’s memory, setup the program’s execution environment, and
+begin executing the program from its entry point.</p>
+<h3 id="tasks"><a href="#tasks">Tasks</a></h3><h4 id="translate-kernel-entry-into-physical-address"><a href="#translate-kernel-entry-into-physical-address">Translate kernel entry into Physical Address</a></h4>
+<p>The initial step to enable the lazy pager is to parse the kernel and populate the <a href="struct.KernelVmPager.html" title="KernelVmPager"><code>KernelVmPager</code></a> struct.
+Unlike the user level ELF program, kernel loading operates on physical address.
+In this task, you must have to find the entry point of the kernel to be used for initial entry point for the guest kernel.
+The physical address of the kernel entry point can be obtained by subtracting the virtual address of the <a href="project3::keos_vm::elf::Phdr"><code>Phdr</code></a> from the kernel entry address <a href="project3::keos_vm::elf::ELF::entry"><code>ELF::entry()</code></a>.</p>
+<h4 id="load-phdr-to-loader"><a href="#load-phdr-to-loader">Load phdr to loader</a></h4>
+<p>The next step to have to implement is the [<code>load_phdr</code>] to enable the registeration of loaders that map physicall address in the <a href="project3::keos_vm::elf::Phdr"><code>Phdr</code></a> to the pager.
+The implementation requires reading from the kernel image file through <code>kernel.peeker().file</code> starting from the specified page offset
+to page offset + size. Page offset and the size can be obtained from the <a href="project3::keos_vm::elf::Phdr"><code>Phdr</code></a>.
+See the <a href="../../../keos/fs/type.File.html"><code>File</code></a> for the apis to operate with the file system.</p>
+<h4 id="load-page-to-extended-page-table"><a href="#load-page-to-extended-page-table">Load page to extended page table</a></h4>
+<p>Lastly, you have to implement [<code>load_page</code>] that called on EPT violation.
+[<code>load_page</code>] maps a page to the extended page table with permission set to READ, WRITE, and EXECUTABLE.
+You MUST consider the case that multiple cores trigger EPT violations on the same physical page.</p>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><div class="item-table"><div class="item-row"><div class="item-left"><a class="struct" href="struct.KernelVmPager.html" title="struct project3::keos_vm::pager::KernelVmPager">KernelVmPager</a></div><div class="item-right docblock-short">Vm Pager of the kernel.</div></div><div class="item-row"><div class="item-left"><a class="struct" href="struct.Probe.html" title="struct project3::keos_vm::pager::Probe">Probe</a></div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2><div class="item-table"><div class="item-row"><div class="item-left"><a class="type" href="type.PageLoader.html" title="type project3::keos_vm::pager::PageLoader">PageLoader</a></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="project3" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (585f3eef2 2023-02-11)" data-search-js="search-28136cea55c34037.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
