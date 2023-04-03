@@ -1,5 +1,0 @@
-[workspace]
-members = [
-  "kev",
-  "projects/project1",
-]
