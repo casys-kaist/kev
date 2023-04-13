@@ -195,6 +195,7 @@ mod tests {
 
         pub mod mmio {
             use core::arch::global_asm;
+            use project2::PRINTER_PROXY;
 
             // print 'Hello mmio!\n' and exit.
             global_asm!(
@@ -210,10 +211,11 @@ mod tests {
                 "mov rax, 0",
                 "vmcall",
                 "mmio_print_buf:",
-                ".byte 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x6d, 0x6d, 0x69, 0x6f, 0x21, 0x20",
+                ".byte 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x6d, 0x6d, 0x69, 0x6f, 0x21, 0xa",
                 "mmio_print_end:",
             );
             pub fn mmio_print() {
+                unsafe { PRINTER_PROXY.clear(); }
                 super::run_code_on_vm::<0>(unsafe {
                     extern "C" {
                         static mmio_print_start: u8;
@@ -224,7 +226,8 @@ mod tests {
                         &mmio_print_end as *const _ as usize
                             - &mmio_print_start as *const _ as usize,
                     )
-                })
+                });
+                assert_eq!(unsafe { &PRINTER_PROXY }, "Hello mmio!\n");
             }
         }
     }
