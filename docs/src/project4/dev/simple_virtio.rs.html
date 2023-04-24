@@ -198,6 +198,13 @@
 <a href="#198" id="198">198</a>
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Simple VirtIO Block
 //!
 //! ## Background
@@ -332,14 +339,15 @@
 //! [`VirtQueueFetcher`]: crate::virtio::virt_queue::VirtQueueFetcher
 //!
 </span><span class="kw">use </span><span class="kw">crate</span>::virtio::{
-    virt_queue::{VirtQueue, VirtQueueEntryCmd},
+    virt_queue::{VirtQueue, VirtQueueEntry, VirtQueueEntryCmd},
     VirtIoMmioHeader, VirtIoStatus,
 };
-<span class="kw">use </span>alloc::boxed::Box;
+<span class="kw">use </span>alloc::{boxed::Box, sync::Arc};
 <span class="kw">use </span>core::mem::size_of;
 <span class="kw">use </span>keos::{
     fs::{file_system, File},
     mm::Page,
+    sync::SpinLock,
 };
 <span class="kw">use </span>kev::{
     vcpu::{GenericVCpuState, VmexitResult},
@@ -352,22 +360,33 @@
     vmexit::mmio::{<span class="self">self</span>, MmioInfo, MmioRegion},
 };
 
-<span class="kw">pub struct </span>SimpleVirtIoBlockDev {
+<span class="kw">pub struct </span>SimpleVirtioBlockDevInner {
     status: VirtIoStatus,
-    virt_queue: <span class="prelude-ty">Option</span>&lt;VirtQueue&gt;,
+    virt_queue: <span class="prelude-ty">Option</span>&lt;VirtQueue&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[VirtQueueEntry]&gt;&gt;,
     file_system: File,
 }
 
+<span class="kw">pub struct </span>SimpleVirtIoBlockDev {
+    inner: Arc&lt;SpinLock&lt;SimpleVirtioBlockDevInner&gt;&gt;,
+}
+
 <span class="kw">impl </span>SimpleVirtIoBlockDev {
-    <span class="kw">pub fn </span>register(
-        pager: <span class="kw-2">&amp;mut </span>KernelVmPager,
-        mmio_ctl: <span class="kw-2">&amp;mut </span>mmio::Controller,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), EptMappingError&gt; {
-        <span class="kw">let </span>this = <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>this = SimpleVirtioBlockDevInner {
             status: VirtIoStatus::MAGIC,
             virt_queue: <span class="prelude-val">None</span>,
             file_system: file_system().unwrap().open(<span class="string">&quot;disk_file&quot;</span>).unwrap(),
         };
+        <span class="self">Self </span>{
+            inner: Arc::new(SpinLock::new(this)),
+        }
+    }
+
+    <span class="kw">pub fn </span>attach(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        pager: <span class="kw-2">&amp;mut </span>KernelVmPager,
+        mmio_ctl: <span class="kw-2">&amp;mut </span>mmio::Controller,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), EptMappingError&gt; {
         <span class="macro">todo!</span>()
     }
 }
@@ -387,12 +406,7 @@
         generic_vcpu_state: <span class="kw-2">&amp;mut </span>GenericVCpuState,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;VmexitResult, VmError&gt; {
         <span class="kw">if let </span>mmio::Direction::Write32 { dst, src } = info.direction {
-            <span class="kw">match </span><span class="self">self</span>.status {
-                VirtIoStatus::MAGIC =&gt; <span class="macro">todo!</span>(),
-                VirtIoStatus::DRIVEROK =&gt; <span class="macro">todo!</span>(),
-                VirtIoStatus::READY =&gt; <span class="macro">todo!</span>(),
-                VirtIoStatus::RESET =&gt; <span class="macro">unreachable!</span>()
-            }
+            <span class="macro">todo!</span>()
         } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(VmexitResult::Ok)
         }

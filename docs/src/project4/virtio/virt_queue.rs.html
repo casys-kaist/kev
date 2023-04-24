@@ -231,9 +231,12 @@
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Virtqueue implementation
 </span><span class="kw">use </span><span class="kw">super</span>::VirtIoMmioHeader;
-<span class="kw">use </span>alloc::boxed::Box;
+<span class="kw">use </span>alloc::{boxed::Box, vec::Vec};
 <span class="kw">use </span>core::{
     fmt::Debug,
     ptr::{read_volatile, write_volatile},
@@ -262,18 +265,21 @@
 
 <span class="doccomment">/// A container for holding virtqueue.
 </span><span class="attr">#[repr(C)]
-</span><span class="kw">pub struct </span>VirtQueueContainer {
-    size: usize,
-    _pad: usize,
-    entries: [VirtQueueEntry; <span class="number">0</span>],
-    _pin: core::marker::PhantomPinned,
+</span><span class="kw">pub struct </span>VirtQueue&lt;T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
+    entries: T,
 }
 
-<span class="kw">impl </span>core::ops::Index&lt;usize&gt; <span class="kw">for </span>VirtQueueContainer {
+<span class="kw">impl</span>&lt;T&gt; core::ops::Index&lt;usize&gt; <span class="kw">for </span>VirtQueue&lt;T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
     <span class="kw">type </span>Output = VirtQueueEntry;
 
     <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.size);
+        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.entries.len());
         <span class="kw">unsafe </span>{
             ((<span class="self">self</span>.entries.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span>usize
                 + core::mem::size_of::&lt;VirtQueueEntry&gt;() * index)
@@ -283,10 +289,12 @@
         }
     }
 }
-
-<span class="kw">impl </span>core::ops::IndexMut&lt;usize&gt; <span class="kw">for </span>VirtQueueContainer {
+<span class="kw">impl</span>&lt;T&gt; core::ops::IndexMut&lt;usize&gt; <span class="kw">for </span>VirtQueue&lt;T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt; + core::ops::DerefMut,
+{
     <span class="kw">fn </span>index_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Output {
-        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.size);
+        <span class="macro">assert!</span>(index &lt; <span class="self">self</span>.entries.len());
         <span class="kw">unsafe </span>{
             ((<span class="self">self</span>.entries.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_ as </span>usize
                 + core::mem::size_of::&lt;VirtQueueEntry&gt;() * index)
@@ -297,44 +305,42 @@
     }
 }
 
-<span class="doccomment">/// The virtqueue.
-</span><span class="attr">#[repr(C)]
-</span><span class="kw">pub struct </span>VirtQueue {
-    entries: Box&lt;VirtQueueContainer&gt;,
-}
-
-<span class="kw">impl </span>VirtQueue {
+<span class="kw">impl </span>VirtQueue&lt;Box&lt;[VirtQueueEntry]&gt;&gt; {
     <span class="doccomment">/// Create a new virtqueue.
     </span><span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>inner = <span class="kw">unsafe </span>{
-            Box::from_raw(alloc::alloc::alloc_zeroed(
-                alloc::alloc::Layout::from_size_align(
-                    core::mem::size_of::&lt;usize&gt;() * <span class="number">3
-                        </span>+ core::mem::size_of::&lt;VirtQueueEntry&gt;() * size,
-                    <span class="number">16</span>,
-                )
-                .unwrap(),
-            ) <span class="kw">as </span><span class="kw-2">*mut </span>VirtQueueContainer)
-        };
-        inner.size = size;
-
-        VirtQueue { entries: inner }
+        <span class="kw">let </span><span class="kw-2">mut </span>entries = (<span class="number">0</span>..size)
+            .map(|<span class="kw">_</span>| VirtQueueEntry {
+                addr: Pa::ZERO,
+                size: <span class="number">0</span>,
+                sector: <span class="number">0</span>,
+                cmd: VirtQueueEntryCmd::Read,
+            })
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+            .into_boxed_slice();
+        VirtQueue { entries }
     }
-
-    <span class="doccomment">/// Get a virtqueue from Va.
-    </span><span class="kw">pub unsafe fn </span>new_from_raw_ptr(queue_va: Va) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>inner = <span class="kw">unsafe </span>{ Box::from_raw(queue_va.into_usize() <span class="kw">as </span><span class="kw-2">*mut </span>VirtQueueContainer) };
-
-        VirtQueue { entries: inner }
-    }
-
     <span class="doccomment">/// Get a virtual address of the virtqueue.
     </span><span class="kw">pub fn </span>virt_queue_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.entries.as_ref() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span>usize
+        <span class="self">self</span>.entries.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span>usize
     }
+}
+<span class="kw">impl </span>VirtQueue&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[VirtQueueEntry]&gt; {
+    <span class="doccomment">/// Get a virtqueue from Va.
+    </span><span class="kw">pub unsafe fn </span>new_from_raw_ptr(size: usize, queue_va: Va) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>entries = <span class="kw">unsafe </span>{
+            core::slice::from_raw_parts(queue_va.into_usize() <span class="kw">as </span><span class="kw-2">*mut </span>VirtQueueEntry, size)
+        };
 
+        VirtQueue { entries }
+    }
+}
+
+<span class="kw">impl</span>&lt;T&gt; VirtQueue&lt;T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
     <span class="doccomment">/// Get a fetcher object of the virtqueue.
-    </span><span class="kw">pub fn </span>fetcher&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, mmio: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>VirtIoMmioHeader) -&gt; VirtQueueFetcher {
+    </span><span class="kw">pub fn </span>fetcher&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>, mmio: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>VirtIoMmioHeader) -&gt; VirtQueueFetcher&lt;T&gt; {
         <span class="kw">let </span>head = <span class="kw">unsafe </span>{ read_volatile(<span class="kw-2">&amp;</span>mmio.queue_head <span class="kw">as </span><span class="kw-2">*const </span>u32) <span class="kw">as </span>usize };
         <span class="kw">let </span>tail = <span class="kw">unsafe </span>{ read_volatile(<span class="kw-2">&amp;</span>mmio.queue_tail <span class="kw">as </span><span class="kw-2">*const </span>u32) <span class="kw">as </span>usize };
         VirtQueueFetcher {
@@ -347,20 +353,26 @@
 }
 
 <span class="doccomment">/// Fetcher object for the virtqueue.
-</span><span class="kw">pub struct </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>&gt; {
-    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>VirtQueue,
+</span><span class="kw">pub struct </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>, T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>VirtQueue&lt;T&gt;,
     mmio: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>VirtIoMmioHeader,
     head: usize,
     tail: usize,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>, T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
     <span class="kw">fn </span>charge(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         (<span class="self">self</span>.head - <span class="self">self</span>.tail) <span class="kw">as </span>usize
     }
 
     <span class="kw">fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.inner.entries.size
+        <span class="self">self</span>.inner.entries.len()
     }
 
     <span class="kw">fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -370,21 +382,9 @@
     <span class="kw">fn </span>is_full(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.size() == <span class="self">self</span>.charge()
     }
+}
 
-    <span class="doccomment">/// Push a single entry to the virtqueue.
-    ///
-    /// This does not ring the doorbell.
-    </span><span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: VirtQueueEntry) -&gt; <span class="prelude-ty">Result</span>&lt;(), VirtQueueEntry&gt; {
-        <span class="kw">if </span>!<span class="self">self</span>.is_full() {
-            <span class="kw">let </span>size = <span class="self">self</span>.size();
-            <span class="self">self</span>.inner.entries[<span class="self">self</span>.head] = value;
-            <span class="self">self</span>.head = (<span class="self">self</span>.head + <span class="number">1</span>) % size;
-            <span class="prelude-val">Ok</span>(())
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(value)
-        }
-    }
-
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[VirtQueueEntry]&gt; {
     <span class="doccomment">/// Pop a single entry to the virtqueue.
     </span><span class="kw">pub fn </span>pop_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;VirtQueueEntry&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.is_empty() {
@@ -396,19 +396,14 @@
             <span class="prelude-val">None
         </span>}
     }
-
-    <span class="doccomment">/// Kick the doorbell to request commands to the VMM.
-    </span><span class="kw">pub fn </span>kick(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ()&gt; {
+    <span class="doccomment">/// Acknowledge the consumed request.
+    </span><span class="kw">pub fn </span>ack(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ()&gt; {
         <span class="comment">// The sequence of the update in this function
         // is really important. Do not change the order.
         </span><span class="kw">unsafe </span>{
             <span class="kw">if </span>read_volatile(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mmio.queue_tail) != <span class="self">self</span>.tail <span class="kw">as </span>u32 {
                 write_volatile(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mmio.queue_tail, <span class="self">self</span>.tail <span class="kw">as </span>u32);
-            } <span class="kw">else if </span>read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_head) != <span class="self">self</span>.head <span class="kw">as </span>u32 {
-                write_volatile(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mmio.queue_head, <span class="self">self</span>.head <span class="kw">as </span>u32);
-                <span class="self">self</span>.tail = read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_tail) <span class="kw">as </span>usize;
             }
-
             <span class="comment">// This check is required to verify the change we made into mmio area.
             </span><span class="kw">if </span>read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_head) == <span class="self">self</span>.head <span class="kw">as </span>u32
                 &amp;&amp; read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_tail) == <span class="self">self</span>.tail <span class="kw">as </span>u32
@@ -424,44 +419,55 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Debug <span class="kw">for </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>, Box&lt;[VirtQueueEntry]&gt;&gt; {
+    <span class="doccomment">/// Push a single entry to the virtqueue.
+    ///
+    /// This does not ring the doorbell.
+    </span><span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: VirtQueueEntry) -&gt; <span class="prelude-ty">Result</span>&lt;(), VirtQueueEntry&gt; {
+        <span class="kw">if </span>!<span class="self">self</span>.is_full() {
+            <span class="kw">let </span>size = <span class="self">self</span>.size();
+            <span class="self">self</span>.inner.entries[<span class="self">self</span>.head] = value;
+            <span class="self">self</span>.head = (<span class="self">self</span>.head + <span class="number">1</span>) % size;
+            <span class="prelude-val">Ok</span>(())
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(value)
+        }
+    }
+
+    <span class="doccomment">/// Kick the doorbell to request commands to the VMM.
+    </span><span class="kw">pub fn </span>kick(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ()&gt; {
+        <span class="comment">// The sequence of the update in this function
+        // is really important. Do not change the order.
+        </span><span class="kw">unsafe </span>{
+            <span class="kw">if </span>read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_head) != <span class="self">self</span>.head <span class="kw">as </span>u32 {
+                write_volatile(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mmio.queue_head, <span class="self">self</span>.head <span class="kw">as </span>u32);
+                <span class="self">self</span>.tail = read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_tail) <span class="kw">as </span>usize;
+            }
+            <span class="comment">// This check is required to verify the change we made into mmio area.
+            </span><span class="kw">if </span>read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_head) == <span class="self">self</span>.head <span class="kw">as </span>u32
+                &amp;&amp; read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_tail) == <span class="self">self</span>.tail <span class="kw">as </span>u32
+            {
+                <span class="kw">if </span>read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.status) != <span class="kw">super</span>::VirtIoStatus::READY <span class="kw">as </span>u32 {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(());
+                }
+                <span class="prelude-val">Ok</span>(())
+            } <span class="kw">else </span>{
+                <span class="prelude-val">Err</span>(())
+            }
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Debug <span class="kw">for </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>, T&gt;
+<span class="kw">where
+    </span>T: core::ops::Deref&lt;Target = [VirtQueueEntry]&gt;,
+{
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>core::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; core::fmt::Result {
         f.debug_struct(<span class="string">&quot;VirtQueue&quot;</span>)
-            .field(<span class="string">&quot;size&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.entries.size)
+            .field(<span class="string">&quot;size&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.entries.len())
             .field(<span class="string">&quot;head&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.head)
             .field(<span class="string">&quot;tail&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.tail)
             .finish()
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Item = VirtQueueEntry;
-
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.pop_back()
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Drop <span class="kw">for </span>VirtQueueFetcher&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">let </span>mmio_head = <span class="kw">unsafe </span>{ read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_head) <span class="kw">as </span>usize };
-        <span class="kw">let </span>mmio_tail = <span class="kw">unsafe </span>{ read_volatile(<span class="kw-2">&amp;</span><span class="self">self</span>.mmio.queue_tail) <span class="kw">as </span>usize };
-
-        <span class="kw">if </span>mmio_head != <span class="self">self</span>.head || mmio_tail != <span class="self">self</span>.tail {
-            <span class="macro">println!</span>(
-                <span class="string">&quot;mmio queue head: {} mmio queue tail: {}&quot;</span>,
-                mmio_head, mmio_tail
-            );
-            <span class="macro">println!</span>(
-                <span class="string">&quot;fetcher queue head: {} fetcher queue tail: {}&quot;</span>,
-                <span class="self">self</span>.head, <span class="self">self</span>.tail
-            );
-            <span class="macro">panic!</span>(
-                <span class="string">&quot;Possible corruption of virtio index (head and tail).
-                    It&#39;s recommended to check if &#39;VirtQueueFetcher::kick&#39; was
-                    called after a &#39;push_queue&#39; or &#39;pop_queue&#39; operation.&quot;
-            </span>);
-        }
     }
 }
 </code></pre></div>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SimpleVirtIoBlockDev"]};
+window.SIDEBAR_ITEMS = {"struct":["SimpleVirtIoBlockDev","SimpleVirtioBlockDevInner"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["VirtQueueEntryCmd"],"struct":["VirtQueue","VirtQueueContainer","VirtQueueEntry","VirtQueueFetcher"]};
+window.SIDEBAR_ITEMS = {"enum":["VirtQueueEntryCmd"],"struct":["VirtQueue","VirtQueueEntry","VirtQueueFetcher"]};
