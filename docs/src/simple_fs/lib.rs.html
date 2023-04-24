@@ -564,7 +564,7 @@
 <span class="doccomment">/// Sector.
 </span><span class="attr">#[repr(transparent)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-</span><span class="kw">pub struct </span>Sector(usize);
+</span><span class="kw">pub struct </span>Sector(<span class="kw">pub </span>usize);
 
 <span class="kw">impl </span>Sector {
     <span class="doccomment">/// Get offset that represented by the sector.

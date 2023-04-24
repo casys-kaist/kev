@@ -19,6 +19,7 @@ var sourcesIndex = JSON.parse('{\
 "project1":["",[],["lib.rs","page_table.rs","rr.rs"]],\
 "project2":["",[["vmexit",[],["cpuid.rs","hypercall.rs","mod.rs","msr.rs","pio.rs"]]],["hypercall.rs","lib.rs","msr.rs","no_ept_vm.rs","pio.rs"]],\
 "project3":["",[["keos_vm",[["dev",[],["kvm.rs","mod.rs","x2apic.rs","x86.rs"]],["elf",[],["header.rs","mod.rs","phdr.rs","shdr.rs"]]],["mod.rs","pager.rs"]],["vmexit",[],["mmio.rs"]]],["ept.rs","lib.rs","mmio.rs","simple_ept_vm.rs"]],\
+"project4":["",[["dev",[],["mod.rs","simple_virtio.rs","x2apic.rs"]],["virtio",[],["mod.rs","virt_queue.rs"]]],["lib.rs","vm.rs"]],\
 "rustc_demangle":["",[],["legacy.rs","lib.rs","v0.rs"]],\
 "simple_fs":["",[],["lib.rs"]],\
 "spin":["",[],["lib.rs","mutex.rs","once.rs","rw_lock.rs"]],\

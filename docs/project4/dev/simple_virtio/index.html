@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Simple VirtIO Block"><title>project4::dev::simple_virtio - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-0ef3deca4ed45ad8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-f501212b8b071243.css"><link rel="stylesheet" disabled href="../../../static.files/dark-e92fc12c34ff89d3.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-a0090c8b1ced384f.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/main-bfa4087bf2db080e.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../project4/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../project4/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module simple_virtio</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">project4</a>::<wbr><a href="../index.html">dev</a>::<wbr><a class="mod" href="#">simple_virtio</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../src/project4/dev/simple_virtio.rs.html#1-200">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Simple VirtIO Block</p>
+<h3 id="background"><a href="#background">Background</a></h3><h4 id="simple-virtio-block-device-specification"><a href="#simple-virtio-block-device-specification">Simple VirtIO Block device specification</a></h4><h4 id="1-introduction"><a href="#1-introduction">1. Introduction</a></h4>
+<p>This describes the specifications of the “Simple VirtIO Block” device.
+The purpose of this documentations is to provide the basic and concrete informations
+for building svirtb-device and svirtb-driver.</p>
+<h5 id="11-terminology"><a href="#11-terminology">1.1 Terminology</a></h5>
+<p>The keywords “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”,
+“RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted
+as described in <a href="http://www.ietf.org/rfc/rfc2119.txt">RFC2119</a>.</p>
+<h5 id="12-structure-specification"><a href="#12-structure-specification">1.2 Structure Specification</a></h5>
+<p>Device and In-memory structure layouts are documented using the C struct syntax.
+All structure MUST not have any additional padding.</p>
+<p>For the integer data types, the following conventions are used:</p>
+<ul>
+<li>u8, u16, u32, u64: An unsigned integer of the specified length in bits.</li>
+<li>le8, le16, le32, le64: An unsigned integer of the specified length in bits, in little-endian byte order.</li>
+</ul>
+<h4 id="2-basic-facilities-of-a-simple-virtio-block"><a href="#2-basic-facilities-of-a-simple-virtio-block">2. Basic Facilities of a Simple VirtIO Block</a></h4>
+<p>A simple virtIO block is discovered and identified by a mmio struct <a href="../../virtio/struct.VirtIoMmioHeader.html" title="VirtIoMmioHeader"><code>VirtIoMmioHeader</code></a>. Mmio field (header) consists of the following parts:</p>
+<div class="example-wrap"><pre class="language-C"><code>struct VirtIoMmioHeader {
+    le32 status;
+    le32 queue_size;
+    le32 queue_addr_hi;
+    le32 queue_addr_lo;
+    le32 queue_head;
+    le32 queue_tail;
+}
+</code></pre></div>
+<ul>
+<li>status: Status of the device</li>
+<li>queue_size: Size of the virtqueue</li>
+<li>queue_addr_hi: Upper 32bit of the virtqueue physical address</li>
+<li>queue_addr_lo: Lower 32bit of the virtqueue physical address</li>
+<li>queue_head: Head of the ring buffer. Driver update the tail of the queue. Device must not update the field.</li>
+<li>queue_tail: Tail of the ring buffer. Device update the tail of the queue. Driver must not update the field.</li>
+</ul>
+<h5 id="21-device-status-field"><a href="#21-device-status-field">2.1 Device status field</a></h5>
+<p>During device initialization by a driver, the driver follows the sequence of steps specified in <a href="#3-device-initialization"><code>3</code></a>.
+The device status field provides a simple low-level indication of the completed steps of this sequence.
+It’s most useful to imagine it hooked up to traffic lights on the console indicating the status of each device.
+The following status code are defined (listed below in the order in which they would be typically set):</p>
+<div class="example-wrap"><pre class="language-C"><code>le32 MAGIC = 0x74726976
+le32 DRIVER_OK = 0
+le32 READY = 1
+le32 RESET = 2
+</code></pre></div>
+<ul>
+<li>MAGIC : Indicates that the region of the mmio is used for svirtb. Device sets the fields when initialization.</li>
+<li>DRIVER_OK : Indicates that the driver is ready to initiate the svirtb.</li>
+<li>READY : Indicates that the device is ready to be used by the svirtb device driver. From this points, svirtb device is activated.</li>
+<li>RESET : Reset the svirtb connection and start over.</li>
+</ul>
+<h5 id="211-driver-requirements-device-status-field"><a href="#211-driver-requirements-device-status-field">2.1.1 Driver Requirements: Device Status Field</a></h5>
+<p>The driver MUST update device status, setting bits to indicate the steps of the driver initialization
+in <a href="#3-device-initialization"><code>3</code></a>. The driver MUST NOT set a device status to MAGIC value.
+The driver MUST fill the necessary fields of the ring buffer configuration space
+(size, queue_addr_low and queue_addr_high) after driver sets the DRIVER_OK status bit.</p>
+<h5 id="212-device-requirements-device-status-field"><a href="#212-device-requirements-device-status-field">2.1.2 Device Requirements: Device Status Field</a></h5>
+<p>The device MUST initialize device status to 0x74726976 upon start and reset.</p>
+<p>The driver MUST enable READY after it validate the queue address and size negotiated
+with the virtio driver.
+The device SHOULD set RESET when it enters an error state that a reset is needed.</p>
+<h5 id="22-ring-buffer"><a href="#22-ring-buffer">2.2 Ring buffer</a></h5>
+<p>The mechanisms for data transport on svirtb is ring buffer.
+Driver makes requests available to device by enqueue an entry or multiple entries to the ring buffer and
+write the index to the doorbell (ring_buffer_head).
+Device executes the requests and, when complete, update the lastly consume index to the ring_buffer_tail.</p>
+<h5 id="221-ring-buffer-entry"><a href="#221-ring-buffer-entry">2.2.1 Ring buffer entry</a></h5>
+<p>Each entry of the ring buffer is consists of the four parts.</p>
+<div class="example-wrap"><pre class="language-C"><code>struct VirtQueueEntry {
+    le64 addr;
+    le64 size;
+    le64 sector;
+    le32 cmd;
+}
+</code></pre></div>
+<ul>
+<li>addr: Physical address of the buffer</li>
+<li>size: size of the buffer</li>
+<li>sector: sector of the vritual disk</li>
+<li>cmd: indicates the command. 0 is read, and 1 is write.</li>
+</ul>
+<h4 id="3-device-initialization"><a href="#3-device-initialization">3. Device Initialization</a></h4>
+<p>The driver MUST follow this sequence to initialize a device:</p>
+<ol>
+<li>Check the magic exists in status field.</li>
+<li>Write the DRIVER_OK to the status field.</li>
+<li>Check whether status field is still DRIVER_OK.</li>
+<li>Perform ring buffer configuration; reading and writing device’s ring buffer configuration space.</li>
+<li>Set the status field to READY.</li>
+<li>Check whether status field is READY. At this point the device is “live”.</li>
+</ol>
+<p>The driver MUST NOT send any buffer available notifications to the device before setting READY.</p>
+<h4 id="4-virtio-over-mmio"><a href="#4-virtio-over-mmio">4. virtio over mmio</a></h4>
+<p>For simplicity of the implementation, the mmio region of the simple virtIO block always located on the 0xcafe0000.</p>
+<p>The layout of the mmio area is follow:</p>
+<div class="example-wrap"><pre class="language-C"><code>struct svirtb {
+    le32 status;
+    le32 queue_size;
+    le32 queue_addr_hi;
+    le32 queue_addr_lo;
+    le32 queue_head;
+    le32 queue_tail;
+}
+</code></pre></div>
+<ul>
+<li>status: Device status bits. Reading from this register returns the current device status flags. Initialized with magic by device - 0x74726976 (a Little Endian equivalent of the ‘virt’ string).</li>
+<li>queue_size: Writing to this register notifies the device what size of the queue the driver will use (select the length of the queue).</li>
+<li>queue_addr_hi: high part of ring buffer physical address (32-63 bits)</li>
+<li>queue_addr_lo: low part of ring buffer physical address (0-31 bits)</li>
+<li>queue_head: head index of the ring buffer</li>
+<li>queue_tail: tail index of the ring buffer</li>
+</ul>
+<h3 id="tasks"><a href="#tasks">Tasks</a></h3>
+<p>In this project, you are required to implement the device part (backend driver) of Simple Virtio Block Device.
+You can get <a href="../../virtio/virt_queue/struct.VirtQueue.html#method.new_from_raw_ptr"><code>VirtQueue</code></a> by calling <a href="../../virtio/virt_queue/struct.VirtQueue.html#method.new_from_raw_ptr" title="VirtQueue::new_from_raw_ptr"><code>VirtQueue::new_from_raw_ptr</code></a>.
+After that, you can access <a href="../../virtio/virt_queue/struct.VirtQueueEntry.html"><code>VirtQueueEntry</code></a> through an struct called <a href="../../virtio/virt_queue/struct.VirtQueueFetcher.html"><code>VirtQueueFetcher</code></a>.
+You can utilize <a href="../../virtio/virt_queue/struct.VirtQueueFetcher.html"><code>VirtQueueFetcher</code></a> to implement this project.</p>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><div class="item-table"><div class="item-row"><div class="item-left"><a class="struct" href="struct.SimpleVirtIoBlockDev.html" title="struct project4::dev::simple_virtio::SimpleVirtIoBlockDev">SimpleVirtIoBlockDev</a></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="project4" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (585f3eef2 2023-02-11)" data-search-js="search-28136cea55c34037.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

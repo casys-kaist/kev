@@ -80,6 +80,27 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre><pre class="rust"><code><span class="kw">use </span>kev::{
     vcpu::{GenericVCpuState, VmexitResult},
     vmcs::Field,
@@ -162,5 +183,25 @@
         </span><span class="prelude-val">Ok</span>(VmexitResult::Ok)
     }
 }
-</code></pre></div>
+
+
+<span class="kw">pub struct </span>ExitPio;
+<span class="kw">impl </span>PioHandler <span class="kw">for </span>ExitPio {
+    <span class="kw">fn </span>handle(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _port: u16,
+        direction: Direction,
+        _p: <span class="kw-2">&amp;</span><span class="kw">dyn </span>Probe,
+        generic_vcpu_state: <span class="kw-2">&amp;mut </span>GenericVCpuState,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;VmexitResult, VmError&gt; {
+        <span class="comment">// Pio::new(0x604).write_u32(0 | 0x2000);
+        </span><span class="kw">if let </span>Direction::Outd(v) = direction {
+            <span class="kw">if </span>v == <span class="number">0 </span>| <span class="number">0x2000 </span>{
+                generic_vcpu_state.vm.upgrade().unwrap().exit(<span class="number">0</span>);
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(VmexitResult::Exited(<span class="number">0</span>));
+            }
+        }
+        <span class="prelude-val">Ok</span>(VmexitResult::Ok)
+    }
+}</code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="project3" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (585f3eef2 2023-02-11)" data-search-js="search-28136cea55c34037.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
