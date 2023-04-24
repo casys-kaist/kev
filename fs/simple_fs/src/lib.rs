@@ -96,7 +96,7 @@ impl<'a> ByteRw<'a> {
 /// Sector.
 #[repr(transparent)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-pub struct Sector(usize);
+pub struct Sector(pub usize);
 
 impl Sector {
     /// Get offset that represented by the sector.

@@ -123,10 +123,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "project1"
+version = "0.1.0"
+dependencies = [
+ "bitflags",
+ "keos",
+ "simple_fs",
+]
+
+[[package]]
 name = "project3"
 version = "0.1.0"
 dependencies = [
  "keos",
+ "simple_fs",
+]
+
+[[package]]
+name = "project4"
+version = "0.1.0"
+dependencies = [
+ "keos",
+ "project1",
  "simple_fs",
 ]
 
