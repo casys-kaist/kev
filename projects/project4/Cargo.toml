@@ -1,0 +1,15 @@
+[package]
+name = "project4"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitflags = "1.2.1"
+kev = { path = "../../kev" }
+keos = { path ="../../keos", features = ["smp"] }
+project1 = { path ="../project1" }
+project2 = { path ="../project2" }
+project3 = { path ="../project3" }
+
+[build-dependencies]
+simple_fs = { path = "../../fs/simple_fs" }

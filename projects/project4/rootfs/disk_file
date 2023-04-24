@@ -1,0 +1,7 @@
+Welcome to the KeV project.
+
+Virtualization is an increasingly ubiquitous feature of modern computer systems, and a rapidly evolving part of the system stack. Hardware vendors are adding new features to support more efficient virtualization, OS designs are adapting to perform better in VMs, and VMs are an essential component in cloud computing. Thus, understanding how VMs work is essential to a complete education in computer systems.
+
+In this project, you will skim through the basic components that runs on real virtual machine monitor like KVM. From what you learn, you will build your own type 2 hypervisor and finally extend the hypervisor as an open-ended course project.
+
+In KeV project, we will not bother you from the time-consuming edge case handling and the hidden test cases. The score that you see when run the grading scripts is your final score. We want to keep this project as easy as possible. If you have suggestions on how we can reduce the unnecessary overhead of assignments, cutting them down to the important underlying issues, please let us know.

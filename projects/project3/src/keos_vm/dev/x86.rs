@@ -80,3 +80,24 @@ impl PioHandler for CmosPio {
         Ok(VmexitResult::Ok)
     }
 }
+
+
+pub struct ExitPio;
+impl PioHandler for ExitPio {
+    fn handle(
+        &self,
+        _port: u16,
+        direction: Direction,
+        _p: &dyn Probe,
+        generic_vcpu_state: &mut GenericVCpuState,
+    ) -> Result<VmexitResult, VmError> {
+        // Pio::new(0x604).write_u32(0 | 0x2000);
+        if let Direction::Outd(v) = direction {
+            if v == 0 | 0x2000 {
+                generic_vcpu_state.vm.upgrade().unwrap().exit(0);
+                return Ok(VmexitResult::Exited(0));
+            }
+        }
+        Ok(VmexitResult::Ok)
+    }
+}
