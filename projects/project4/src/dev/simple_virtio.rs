@@ -132,14 +132,15 @@
 //! [`VirtQueueFetcher`]: crate::virtio::virt_queue::VirtQueueFetcher
 //!
 use crate::virtio::{
-    virt_queue::{VirtQueue, VirtQueueEntryCmd},
+    virt_queue::{VirtQueue, VirtQueueEntry, VirtQueueEntryCmd},
     VirtIoMmioHeader, VirtIoStatus,
 };
-use alloc::boxed::Box;
+use alloc::{boxed::Box, sync::Arc};
 use core::mem::size_of;
 use keos::{
     fs::{file_system, File},
     mm::Page,
+    sync::SpinLock,
 };
 use kev::{
     vcpu::{GenericVCpuState, VmexitResult},
@@ -152,22 +153,33 @@ use project3::{
     vmexit::mmio::{self, MmioInfo, MmioRegion},
 };
 
-pub struct SimpleVirtIoBlockDev {
+pub struct SimpleVirtioBlockDevInner {
     status: VirtIoStatus,
-    virt_queue: Option<VirtQueue>,
+    virt_queue: Option<VirtQueue<&'static [VirtQueueEntry]>>,
     file_system: File,
 }
 
+pub struct SimpleVirtIoBlockDev {
+    inner: Arc<SpinLock<SimpleVirtioBlockDevInner>>,
+}
+
 impl SimpleVirtIoBlockDev {
-    pub fn register(
-        pager: &mut KernelVmPager,
-        mmio_ctl: &mut mmio::Controller,
-    ) -> Result<(), EptMappingError> {
-        let this = Self {
+    pub fn new() -> Self {
+        let this = SimpleVirtioBlockDevInner {
             status: VirtIoStatus::MAGIC,
             virt_queue: None,
             file_system: file_system().unwrap().open("disk_file").unwrap(),
         };
+        Self {
+            inner: Arc::new(SpinLock::new(this)),
+        }
+    }
+
+    pub fn attach(
+        &self,
+        pager: &mut KernelVmPager,
+        mmio_ctl: &mut mmio::Controller,
+    ) -> Result<(), EptMappingError> {
         todo!()
     }
 }
@@ -187,12 +199,7 @@ impl mmio::MmioHandler for SimpleVirtIoBlockDev {
         generic_vcpu_state: &mut GenericVCpuState,
     ) -> Result<VmexitResult, VmError> {
         if let mmio::Direction::Write32 { dst, src } = info.direction {
-            match self.status {
-                VirtIoStatus::MAGIC => todo!(),
-                VirtIoStatus::DRIVEROK => todo!(),
-                VirtIoStatus::READY => todo!(),
-                VirtIoStatus::RESET => unreachable!()
-            }
+            todo!()
         } else {
             Ok(VmexitResult::Ok)
         }

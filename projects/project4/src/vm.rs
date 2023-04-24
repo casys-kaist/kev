@@ -22,10 +22,11 @@ use project3::{
     vmexit::mmio,
 };
 
-use crate::dev::X2Apic;
+use crate::dev::{simple_virtio::SimpleVirtIoBlockDev, X2Apic};
 
 /// The Vmstate of VmBase.
 pub struct VmState {
+    virtio: Arc<SpinLock<SimpleVirtIoBlockDev>>,
     pager: Arc<SpinLock<KernelVmPager>>,
     io_bmap: Arc<(Page, Page)>,
 }
@@ -59,8 +60,13 @@ impl VmState {
                 .expect("gKeOS is not exist."),
             ram_in_kib,
         )?));
+        let virtio = Arc::new(SpinLock::new(SimpleVirtIoBlockDev::new()));
 
-        Some(VmState { pager, io_bmap })
+        Some(VmState {
+            virtio,
+            pager,
+            io_bmap,
+        })
     }
 }
 
@@ -77,7 +83,8 @@ impl kev::vm::VmState for VmState {
             msr::Controller::new(),
         );
 
-        crate::dev::simple_virtio::SimpleVirtIoBlockDev::register(
+        crate::dev::simple_virtio::SimpleVirtIoBlockDev::attach(
+            &*self.virtio.lock(),
             &mut *self.pager.lock(),
             &mut mmio_ctl,
         ).expect("Failed to register svirtb device.");

@@ -1,10 +1,7 @@
 #[path = "../../../projects/project4/src/virtio/mod.rs"]
 mod virtio;
 
-use virtio::{
-    virt_queue::{VirtQueue, VirtQueueEntry, VirtQueueEntryCmd, VirtQueueFetcher},
-    VirtIoMmioHeader, VirtIoStatus,
-};
+use alloc::boxed::Box;
 use alloc::sync::Arc;
 use core::ptr::{read_volatile, write_volatile};
 use keos::{
@@ -12,10 +9,14 @@ use keos::{
     fs::{Disk, Error},
     sync::SpinLock,
 };
+use virtio::{
+    virt_queue::{VirtQueue, VirtQueueEntry, VirtQueueEntryCmd, VirtQueueFetcher},
+    VirtIoMmioHeader, VirtIoStatus,
+};
 
 pub struct VirtIoBlockDriver {
     header: *mut VirtIoMmioHeader,
-    virt_queue: VirtQueue,
+    virt_queue: VirtQueue<Box<[VirtQueueEntry]>>,
 }
 
 pub struct VirtIoDisk {
@@ -76,7 +77,7 @@ impl VirtIoBlockDriver {
     }
 
     pub fn send_cmd(
-        fetcher: &mut VirtQueueFetcher,
+        fetcher: &mut VirtQueueFetcher<Box<[VirtQueueEntry]>>,
         buf: &[u8],
         sector: usize,
         cmd: VirtQueueEntryCmd,
@@ -91,7 +92,7 @@ impl VirtIoBlockDriver {
         fetcher.push_front(entry).map_err(|_| Error::DiskError)
     }
 
-    pub fn kick(fetcher: VirtQueueFetcher) -> Result<(), Error> {
+    pub fn kick(fetcher: VirtQueueFetcher<Box<[VirtQueueEntry]>>) -> Result<(), Error> {
         fetcher.kick().map_err(|_| Error::DiskError)
     }
 }
