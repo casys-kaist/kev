@@ -109,6 +109,37 @@ impl VirtIoDisk {
     pub fn finish(&mut self) {
         self.inner.lock().finish();
     }
+
+    pub fn read_many(&self, start_sector: keos::fs::Sector, buf: &mut [u8]) -> Result<(), Error> {
+        assert_eq!(buf.len() % 512, 0);
+        let mut guard = self.inner.lock();
+        let mmio = unsafe { &mut *guard.header };
+        let mut fetcher = guard.virt_queue.fetcher(mmio);
+        for (idx, off) in (0..buf.len()).step_by(512).enumerate() {
+            VirtIoBlockDriver::send_cmd(
+                &mut fetcher,
+                &buf[off..off + 512],
+                start_sector.into_usize() + idx,
+                VirtQueueEntryCmd::Read,
+            )?;
+        }
+        VirtIoBlockDriver::kick(fetcher)
+    }
+    pub fn write_many(&self, start_sector: keos::fs::Sector, buf: &[u8]) -> Result<(), Error> {
+        assert_eq!(buf.len() % 512, 0);
+        let mut guard = self.inner.lock();
+        let mmio = unsafe { &mut *guard.header };
+        let mut fetcher = guard.virt_queue.fetcher(mmio);
+        for (idx, off) in (0..buf.len()).step_by(512).enumerate() {
+            VirtIoBlockDriver::send_cmd(
+                &mut fetcher,
+                &buf[off..off + 512],
+                start_sector.into_usize() + idx,
+                VirtQueueEntryCmd::Write,
+            )?;
+        }
+        VirtIoBlockDriver::kick(fetcher)
+    }
 }
 
 impl Disk for VirtIoDisk {

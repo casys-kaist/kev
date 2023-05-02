@@ -72,7 +72,7 @@ where
 impl VirtQueue<Box<[VirtQueueEntry]>> {
     /// Create a new virtqueue.
     pub fn new(size: usize) -> Self {
-        let mut entries = (0..size)
+        let entries = (0..size)
             .map(|_| VirtQueueEntry {
                 addr: Pa::ZERO,
                 size: 0,
@@ -161,7 +161,7 @@ impl<'a> VirtQueueFetcher<'a, &'static [VirtQueueEntry]> {
         }
     }
     /// Acknowledge the consumed request.
-    pub fn ack(mut self) -> Result<(), ()> {
+    pub fn ack(self) -> Result<(), ()> {
         // The sequence of the update in this function
         // is really important. Do not change the order.
         unsafe {
