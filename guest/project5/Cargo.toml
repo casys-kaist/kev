@@ -1,0 +1,11 @@
+[package]
+name = "project5"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+keos = { path ="../../keos" }
+project1 = { path = "../../projects/project1" }
+
+[build-dependencies]
+simple_fs = { path = "../../fs/simple_fs" }

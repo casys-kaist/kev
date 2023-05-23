@@ -149,6 +149,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "project5"
+version = "0.1.0"
+dependencies = [
+ "keos",
+ "project1",
+ "simple_fs",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
