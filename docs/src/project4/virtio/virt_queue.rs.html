@@ -308,7 +308,7 @@
 <span class="kw">impl </span>VirtQueue&lt;Box&lt;[VirtQueueEntry]&gt;&gt; {
     <span class="doccomment">/// Create a new virtqueue.
     </span><span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>entries = (<span class="number">0</span>..size)
+        <span class="kw">let </span>entries = (<span class="number">0</span>..size)
             .map(|<span class="kw">_</span>| VirtQueueEntry {
                 addr: Pa::ZERO,
                 size: <span class="number">0</span>,
@@ -397,7 +397,7 @@
         </span>}
     }
     <span class="doccomment">/// Acknowledge the consumed request.
-    </span><span class="kw">pub fn </span>ack(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ()&gt; {
+    </span><span class="kw">pub fn </span>ack(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ()&gt; {
         <span class="comment">// The sequence of the update in this function
         // is really important. Do not change the order.
         </span><span class="kw">unsafe </span>{

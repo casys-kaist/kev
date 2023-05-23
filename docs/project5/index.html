@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Project 5: Final project"><title>project5 - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-0ef3deca4ed45ad8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../static.files/light-f501212b8b071243.css"><link rel="stylesheet" disabled href="../static.files/dark-e92fc12c34ff89d3.css"><link rel="stylesheet" disabled href="../static.files/ayu-a0090c8b1ced384f.css"><script src="../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-bfa4087bf2db080e.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../project5/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../project5/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate project5</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#functions">Functions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">project5</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/project5/main.rs.html#1-66">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Project 5: Final project</p>
+<p>You have learned the basic components of the virtulaization.
+In the final project, you will do an open-ended final project based on what you have learned.
+For the final project, you should add a significant piece of functionality to the kev, as described below.
+The project must (1) have a significant implementation component, specified by deliverables
+(2) concern operating systems and (3) be challenging and potentially research-worthy.
+You can modify any source code of the keos and kev infrastructure.
+For all projects, you must write a proposal that is accepted by the course staff.</p>
+<h3 id="candidates-for-final-project"><a href="#candidates-for-final-project">Candidates for final project</a></h3>
+<p>Here is a list of possible tasks for a final project. Some are small enough that multiple options should be combined, especially if you have a larger group.
+You are most welcome to come up with other ideas. The actual project is up to you. Please pick something manageable.
+It is far better to complete your project to spec than it is to take on something too big and not have anything to show for it except excellent intentions (also true in the real world).</p>
+<h4 id="hardware"><a href="#hardware">Hardware</a></h4>
+<ul>
+<li>Port the KeV to work on other vendor’s CPUs: AMD SVM (the rough equivalent of Intel’s VMX), ARM Virtualization</li>
+<li>Implement support for an IOMMU to allow the guest to directory access hardware</li>
+<li>Incorporate x2APIC hardware-based virtualization (Not emulation!)</li>
+<li>Implement any driver and work it on the KeV and gKeOS: VirtIO, network, NVMe, ..</li>
+</ul>
+<h4 id="vm-management"><a href="#vm-management">VM Management</a></h4>
+<ul>
+<li>Implement the Kernel Same-page Merging (KSM) on KeV</li>
+<li>Implement VM snapshot and resume on KeV</li>
+<li>Implement VM live migration on KeV</li>
+<li>Implement the nested virtualization to run KeV on KeV</li>
+<li>Solve the lock-holder preemption problem on gKeOS</li>
+</ul>
+<h4 id="others"><a href="#others">Others</a></h4>
+<ul>
+<li>Use binary translate to support shadow page table on an x86 CPU without Extended Page Table</li>
+<li>Use binary translate to support trap-and-emulate semantics on an x86 CPU without VMX or SVM support</li>
+<li>Implement vmfunc based IPC (skybridge)</li>
+<li>Run another operating system on KeV</li>
+<li>Any topic related to the virtualization that you want</li>
+</ul>
+<p>The project you choose must have a significant virtualization component. For example, you shouldn’t simply port a user-level application that requires little or no kernel modification.
+You should email a proposal to the instructor by the notified deadline.
+The proposal must include: (1) The names of your group members; (2) What you want to do; and (3) What you are expecting to present (a list of deliverables).
+Please keep it short (no more than several paragraphs).</p>
+</div></details><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><div class="item-table"><div class="item-row"><div class="item-left"><a class="fn" href="fn.ap_main.html" title="fn project5::ap_main">ap_main</a><sup title="unsafe function">⚠</sup></div></div><div class="item-row"><div class="item-left"><a class="fn" href="fn.main.html" title="fn project5::main">main</a><sup title="unsafe function">⚠</sup></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="project5" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (585f3eef2 2023-02-11)" data-search-js="search-28136cea55c34037.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
